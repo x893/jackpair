@@ -72,7 +72,7 @@ Secretariat fax: +33 493 65 47 16.
 
 static void lsp_to_freq(int16_t lsp[], int16_t freq[], int16_t order);
 static int16_t lpc_refl2pred(int16_t refc[], int16_t lpc[],
-			       int16_t order);
+	int16_t order);
 
 /* LPC_ACOR                                                                   */
 /*		Compute autocorrelations based on windowed speech frame               */
@@ -91,13 +91,13 @@ static int16_t lpc_refl2pred(int16_t refc[], int16_t lpc[],
 /*	Q values: input - Q0, win_cof - Q15, hf_correction - Q15                  */
 
 void lpc_acor(int16_t input[], const int16_t win_cof[],
-	      int16_t autocorr[], int16_t hf_correction, int16_t order,
-	      int16_t npts)
+	int16_t autocorr[], int16_t hf_correction, int16_t order,
+	int16_t npts)
 {
 	/* Lag window coefficients */
 	static const int16_t lagw_cof[EN_FILTER_ORDER - 1] = {
 		32756, 32721, 32663, 32582, 32478, 32351, 32201, 32030, 31837,
-		    31622,
+			31622,
 		31387, 31131, 30855, 30560, 30246, 29914
 	};
 	register int16_t i, j;
@@ -269,7 +269,7 @@ int32_t lpc_aejw(int16_t lpc[], int16_t omega, int16_t order)
 /*	Q values: lpc[], aw[] - Q12, gamma - Q15, gk - Q15                        */
 
 int16_t lpc_bwex(int16_t lpc[], int16_t aw[], int16_t gamma,
-		   int16_t order)
+	int16_t order)
 {
 	register int16_t i;
 	int16_t gk;		/* gk is Q15 */
@@ -334,62 +334,62 @@ int16_t lpc_clmp(int16_t lsp[], int16_t delta, int16_t order)
 				if (d < delta) {
 					step1 = step2 = melpe_shr(melpe_sub(delta, d), 1);
 
-/* --> */ if (i == 0
-						      && (lsp[i] < delta)) {
+					/* --> */ if (i == 0
+						&& (lsp[i] < delta)) {
 						step1 = melpe_shr(lsp[i], 1);
 					} else {
-/* --> */ if (i > 0) {
+						/* --> */ if (i > 0) {
 							temp =
-							    melpe_sub(lsp[i],
-								lsp[i - 1]);
+								melpe_sub(lsp[i],
+									lsp[i - 1]);
 							if (temp < delta) {
 								step1 = 0;
 							} else {
 								if (temp <
-								    melpe_shl(delta,
-									1))
+									melpe_shl(delta,
+										1))
 									step1 =
-									    melpe_shr
-									    (melpe_sub
-									     (temp,
-									      delta),
-									     1);
+									melpe_shr
+									(melpe_sub
+									(temp,
+										delta),
+										1);
 							}
 						}
 					}
 
-/* --> */ if (i == (order - 2)
-						      &&
-						      (lsp
-											       [i
-																	+
-																	1]
-											       >
-											       melpe_sub
-											       (ONE_Q15,
-																	delta)))
+					/* --> */ if (i == (order - 2)
+						&&
+						(lsp
+							[i
+							+
+							1]
+								>
+									melpe_sub
+									(ONE_Q15,
+										delta)))
 					{
 						step2 =
-						    melpe_shr(melpe_sub
+							melpe_shr(melpe_sub
 							(ONE_Q15, lsp[i + 1]),
-							1);
+								1);
 					} else {
-/* --> */ if (i < (order - 2)) {
+						/* --> */ if (i < (order - 2)) {
 							temp =
-							    melpe_sub(lsp[i + 2],
-								lsp[i + 1]);
+								melpe_sub(lsp[i + 2],
+									lsp[i + 1]);
 							if (temp < delta) {
 								step2 = 0;
 							} else {
 								if (temp <
-								    melpe_shl(delta,
-									1))
+									melpe_shl(delta,
+										1))
 									step2 =
-									    melpe_shr
-									    (melpe_sub
-									     (temp,
-									      delta),
-									     1);
+									melpe_shr
+									(melpe_sub
+									(temp,
+										delta),
+										1);
 							}
 						}
 					}
@@ -529,7 +529,7 @@ int16_t lpc_schr(int16_t autocorr[], int16_t lpc[], int16_t order)
 /* refc - Q15, lpc - Q12                                                      */
 
 static int16_t lpc_refl2pred(int16_t refc[], int16_t lpc[],
-			       int16_t order)
+	int16_t order)
 {
 	register int16_t i, j;
 	int16_t *a1;
@@ -567,7 +567,7 @@ int16_t lpc_pred2lsp(int16_t lpc[], int16_t lsf[], int16_t order)
 {
 	register int16_t i;
 	int16_t p_cof[LPC_ORD / 2 + 1], q_cof[LPC_ORD / 2 + 1],
-	    p_freq[LPC_ORD / 2 + 1], q_freq[LPC_ORD / 2 + 1];
+		p_freq[LPC_ORD / 2 + 1], q_freq[LPC_ORD / 2 + 1];
 	int32_t L_p_cof[LPC_ORD / 2 + 1], L_q_cof[LPC_ORD / 2 + 1];
 	int32_t L_ai, L_api, L_temp;
 	int16_t p2;
@@ -641,9 +641,9 @@ static void lsp_to_freq(int16_t lsp[], int16_t freq[], int16_t order)
 		/* for (i = 0; i < DFTLENGTH; i++)
 		   lsp_cos[i] = cos(i*(TWOPI / DFTLENGTH)); */
 
-		/* cos_fxp() takes Q15 input.  (TWO/DFTLENGTH) above is DFTLENGTH_D4  */
-		/* in Q15.  The first for loop fills lsp_cos[] in the first quadrant, */
-		/* and the next loop fills lsp_cos[] for the other three quadrants.   */
+		   /* cos_fxp() takes Q15 input.  (TWO/DFTLENGTH) above is DFTLENGTH_D4  */
+		   /* in Q15.  The first for loop fills lsp_cos[] in the first quadrant, */
+		   /* and the next loop fills lsp_cos[] for the other three quadrants.   */
 
 		temp1 = 0;
 		for (i = 0; i <= DFTLENGTH_D4; i++) {
@@ -702,18 +702,18 @@ static void lsp_to_freq(int16_t lsp[], int16_t freq[], int16_t order)
 					   (mag[0] - mag[2]) / (mag[0] + mag[2] - 2*mag[1]));
 					   freq[count] *= (2. / DFTLENGTH) ; */
 					L_temp1 =
-					    melpe_L_shr(melpe_L_sub(mag[0], mag[2]), 1);
+						melpe_L_shr(melpe_L_sub(mag[0], mag[2]), 1);
 					L_temp2 =
-					    melpe_L_sub(mag[0], melpe_L_shl(mag[1], 1));
+						melpe_L_sub(mag[0], melpe_L_shl(mag[1], 1));
 					L_temp2 = melpe_L_add(L_temp2, mag[2]);
 					temp1 =
-					    L_divider2(L_temp1, L_temp2, 0, 0);
+						L_divider2(L_temp1, L_temp2, 0, 0);
 					/* temp1 in Q15 */
 					temp1 = melpe_shr(temp1, 9);	/* Q6 */
 					temp2 = melpe_sub(i, 1);
 					temp1 = melpe_add(melpe_shl(temp2, 6), temp1);
 					freq[count] =
-					    melpe_divide_s(temp1, melpe_shl(DFTLENGTH, 5));
+						melpe_divide_s(temp1, melpe_shl(DFTLENGTH, 5));
 					count = melpe_add(count, 1);
 				}
 			}
@@ -888,7 +888,7 @@ int16_t lpc_lsp2pred(int16_t lsf[], int16_t lpc[], int16_t order)
 		/* Q25 -> Q27 -> Q12 */
 		lpc[i] = melpe_extract_h(melpe_L_shl(melpe_L_add(f0[i + 1], f1[i + 1]), 2));
 		lpc[order - 1 - i] =
-		    melpe_extract_h(melpe_L_shl(melpe_L_sub(f0[i + 1], f1[i + 1]), 2));
+			melpe_extract_h(melpe_L_shl(melpe_L_sub(f0[i + 1], f1[i + 1]), 2));
 	}
 
 	v_free(f0);
@@ -920,12 +920,12 @@ int16_t lpc_lsp2pred(int16_t lsf[], int16_t lpc[], int16_t order)
 /*	Copyright (c) 1995 by Texas Instruments, Inc.  All rights reserved.       */
 
 int16_t lpc_syn(int16_t x[], int16_t y[], int16_t a[], int16_t order,
-		  int16_t length)
+	int16_t length)
 {
 	register int16_t i, j;
 	int32_t accum;
 
-/* Tung-chiang believes a[] is Q12, x[] and y[] are Q0. */
+	/* Tung-chiang believes a[] is Q12, x[] and y[] are Q0. */
 
 	for (j = 0; j < length; j++) {
 		accum = melpe_L_shr(melpe_L_deposit_h(x[j]), 3);

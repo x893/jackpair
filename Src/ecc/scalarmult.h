@@ -1,3 +1,5 @@
+#ifndef __scalarmult_h__
+#define __scalarmult_h__
 
 #include <inttypes.h>
 
@@ -55,17 +57,19 @@ fe25519_add_asm(
 #define fe25519_add fe25519_add_asm			
 
 extern void
-	  fe25519_sub_asm(
+fe25519_sub_asm(
     fe25519*       out,
     const fe25519* baseValue,
-    const fe25519* valueToSubstract);	
+    const fe25519* valueToSubstract
+);
 #define fe25519_sub fe25519_sub_asm	
 		
 extern void	
-	  fe25519_mpy121666add_asm(
+fe25519_mpy121666add_asm(
     fe25519*       out,
     const fe25519* valueToAdd,
-    const fe25519* valueToMpy);		
+    const fe25519* valueToMpy
+);
 		
 #define fe25519_mpy121666add fe25519_mpy121666add_asm	
 
@@ -85,12 +89,12 @@ fe25519_unpack(
 );
 
 
-#define crypto_scalarmult crypto_scalarmult_curve25519
-#define crypto_scalarmult_base crypto_scalarmult_curve25519_base
-#define crypto_scalarmult_BYTES crypto_scalarmult_curve25519_BYTES
-#define crypto_scalarmult_SCALARBYTES crypto_scalarmult_curve25519_SCALARBYTES
-#define crypto_scalarmult_curve25519_BYTES 32
-#define crypto_scalarmult_curve25519_SCALARBYTES 32
+#define crypto_scalarmult				crypto_scalarmult_curve25519
+#define crypto_scalarmult_base			crypto_scalarmult_curve25519_base
+#define crypto_scalarmult_BYTES			crypto_scalarmult_curve25519_BYTES
+#define crypto_scalarmult_SCALARBYTES	crypto_scalarmult_curve25519_SCALARBYTES
+#define crypto_scalarmult_curve25519_BYTES			32
+#define crypto_scalarmult_curve25519_SCALARBYTES	32
 extern int crypto_scalarmult_curve25519(unsigned char *,const unsigned char *,const unsigned char *);
 extern int crypto_scalarmult_curve25519_base(unsigned char *,const unsigned char *);
 
@@ -101,5 +105,6 @@ extern void fe25519_elligator2s_invert(
     fe25519*       t0,
     fe25519*       t1,
     fe25519*       t2,
-		fe25519*       t3
+	fe25519*       t3
 );		
+#endif

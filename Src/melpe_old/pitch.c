@@ -42,7 +42,7 @@
 static void lpfilt(int16_t inbuf[], int16_t lpbuf[], int16_t len);
 static void ivfilt(int16_t ivbuf[], int16_t lpbuf[], int16_t len);
 static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
-		    classParam * classStat);
+	classParam * classStat);
 
 //***Test***
 //volatile int16_t tttt=0;
@@ -64,7 +64,7 @@ static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 **
 *****************************************************************************/
 void pitchAuto(int16_t inbuf[], pitTrackParam * pitTrack,
-	       classParam * classStat)
+	classParam * classStat)
 {
 	static BOOLEAN firstTime = TRUE;
 	static int16_t lpbuf[PIT_COR_LEN];	/* low pass filter buffer, Q0 */
@@ -184,7 +184,7 @@ static void ivfilt(int16_t ivbuf[], int16_t lpbuf[], int16_t len)
 		temp3 = melpe_sub(r_coeff[2], temp1);
 		temp1 = melpe_abs_s(temp3);
 		if (temp1 > temp2) {
-			pc2 = (int16_t) - 4096;	/* Q12 */
+			pc2 = (int16_t)-4096;	/* Q12 */
 		} else {
 			pc2 = melpe_divide_s(temp1, temp2);
 			if (temp3 < 0)
@@ -201,11 +201,11 @@ static void ivfilt(int16_t ivbuf[], int16_t lpbuf[], int16_t len)
 		/*      ivbuf[i] = lpbuf[i] - pc1 * lpbuf[i - 1] - pc2 * lpbuf[i - 2]; */
 		L_temp = melpe_L_shl(melpe_L_deposit_l(lpbuf[PIT_COR_LEN - len + i]), 13);
 		L_temp =
-		    melpe_L_sub(L_temp,
-			  melpe_L_mult(pc1, lpbuf[PIT_COR_LEN - len + i - 1]));
+			melpe_L_sub(L_temp,
+				melpe_L_mult(pc1, lpbuf[PIT_COR_LEN - len + i - 1]));
 		L_temp =
-		    melpe_L_sub(L_temp,
-			  melpe_L_mult(pc2, lpbuf[PIT_COR_LEN - len + i - 2]));
+			melpe_L_sub(L_temp,
+				melpe_L_mult(pc2, lpbuf[PIT_COR_LEN - len + i - 2]));
 		ivbuf[PIT_COR_LEN - len + i] = melpe_r_ound(melpe_L_shl(L_temp, 3));
 	}
 }
@@ -217,7 +217,7 @@ static void ivfilt(int16_t ivbuf[], int16_t lpbuf[], int16_t len)
  *	classStat	---- classification paramters					*
  *==============================================================*/
 static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
-		    classParam * classStat)
+	classParam * classStat)
 {
 	register int16_t i, j;
 	int16_t temp, temp1, temp2, shift;
@@ -231,7 +231,7 @@ static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 	int16_t gp[MAXPITCH + 1], peak[MAXPITCH + 1], corx[NODE];	/* Q15 */
 
 	//tttt=1;
-	
+
 	/* ------ Remove DC component. ------ */
 	remove_dc(inbuf, proBuf, PIT_COR_LEN);
 
@@ -241,70 +241,70 @@ static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 		ACC_r0 = melpe_L40_mac(ACC_r0, proBuf[i], proBuf[i]);	/* Q31 */
 	}
 	//tttt=22;
-	
+
 	if (ACC_r0 == 0)
 		ACC_r0 = 1;
 	r0_shift = melpe_norm32(ACC_r0);
 	ACC_r0 = melpe_L40_shl(ACC_r0, r0_shift);
-	L_r0 = (int32_t) ACC_r0;
+	L_r0 = (int32_t)ACC_r0;
 
 	//tttt=23;
-	
+
 	ACC_rk = 0;
 	for (i = MAXPITCH; i < PIT_COR_LEN; i++) {
 		ACC_rk = melpe_L40_mac(ACC_rk, proBuf[i], proBuf[i]);	/* Q31 */
 	}
-	
+
 	//tttt=23;
 	if (ACC_rk == 0)
 		ACC_rk = 1;
 	rk_shift = melpe_norm32(ACC_rk);
 	ACC_rk = melpe_L40_shl(ACC_rk, rk_shift);
-	L_rk = (int32_t) ACC_rk;
+	L_rk = (int32_t)ACC_rk;
 
 	//tttt=24;
-	
+
 	ACC_A = 0;
 	for (i = 0; i < PIT_COR_LEN - MAXPITCH; i++) {
 		ACC_A = melpe_L40_mac(ACC_A, proBuf[i], proBuf[i + MAXPITCH]);	/* Q31 */
 	}
-	
+
 	//tttt=25;
-	
+
 	shift = melpe_add(r0_shift, rk_shift);
 	if (shift & 1) {
 		L_r0 = melpe_L_shr(L_r0, 1);
 		r0_shift = melpe_sub(r0_shift, 1);
 		shift = melpe_add(r0_shift, rk_shift);
 	}
-	
+
 	//tttt=26;
-	
+
 	shift = melpe_shr(shift, 1);
 	ACC_A = melpe_L40_shl(ACC_A, shift);
 	temp = melpe_mult(melpe_extract_h(L_r0), melpe_extract_h(L_rk));
-	
+
 	//tttt=26;
-	
-	if(temp<0) temp=0;
+
+	if (temp < 0) temp = 0;
 	root = sqrt_Q15(temp);
-	L_temp = (int32_t) ACC_A;
-	
+	L_temp = (int32_t)ACC_A;
+
 	//tttt=26;
-	
+
 	temp = melpe_extract_h(L_temp);
 	if (temp < 0)
 		temp = 0;	/* Negative Autocorrelation doesn't make sense here */
-	
+
 	//tttt=27;
-	
-	if(!root) root=1;
+
+	if (!root) root = 1;
 	gp[MAXPITCH] = melpe_divide_s(temp, root);
 
 	/* ==== Here comes the Main loop ==== */
 
 	//tttt=2;
-	
+
 	lowStart = 0;
 	highStart = MAXPITCH;
 	for (i = MAXPITCH - 1; i >= MINPITCH; i--) {
@@ -313,33 +313,33 @@ static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 			ACC_r0 = L_r0;
 			ACC_r0 = melpe_L40_shr(ACC_r0, r0_shift);
 			ACC_r0 =
-			    melpe_L40_msu(ACC_r0, proBuf[lowStart], proBuf[lowStart]);
+				melpe_L40_msu(ACC_r0, proBuf[lowStart], proBuf[lowStart]);
 			ACC_r0 =
-			    melpe_L40_mac(ACC_r0, proBuf[lowStart + PIT_WIN],
-				    proBuf[lowStart + PIT_WIN]);
+				melpe_L40_mac(ACC_r0, proBuf[lowStart + PIT_WIN],
+					proBuf[lowStart + PIT_WIN]);
 			if (ACC_r0 == 0)
 				ACC_r0 = 1;
 			r0_shift = melpe_norm32(ACC_r0);
 			ACC_r0 = melpe_L40_shl(ACC_r0, r0_shift);
-			L_r0 = (int32_t) ACC_r0;
+			L_r0 = (int32_t)ACC_r0;
 			lowStart++;
 		} else {
-			
+
 			//tttt=4;
 			highStart--;
 			ACC_rk = L_rk;
 			ACC_rk = melpe_L40_shr(ACC_rk, rk_shift);
 			ACC_rk =
-			    melpe_L40_mac(ACC_rk, proBuf[highStart],
-				    proBuf[highStart]);
+				melpe_L40_mac(ACC_rk, proBuf[highStart],
+					proBuf[highStart]);
 			ACC_rk =
-			    melpe_L40_msu(ACC_rk, proBuf[highStart + PIT_WIN],
-				    proBuf[highStart + PIT_WIN]);
+				melpe_L40_msu(ACC_rk, proBuf[highStart + PIT_WIN],
+					proBuf[highStart + PIT_WIN]);
 			if (ACC_rk == 0)
 				ACC_rk = 1;
 			rk_shift = melpe_norm32(ACC_rk);
 			ACC_rk = melpe_L40_shl(ACC_rk, rk_shift);
-			L_rk = (int32_t) ACC_rk;
+			L_rk = (int32_t)ACC_rk;
 		}
 		//tttt=5;
 		ACC_A = 0;
@@ -359,18 +359,18 @@ static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 		temp = melpe_mult(melpe_extract_h(L_r0), melpe_extract_h(L_rk));
 		//tttt=8;
 		root = sqrt_Q15(temp);
-		L_temp = (int32_t) ACC_A;
+		L_temp = (int32_t)ACC_A;
 		temp = melpe_extract_h(L_temp);
 		if (temp < 0)
 			temp = 0;	/* ignore negative autocorrelation */
 		//tttt=9;
-		if(!root) root=1;
+		if (!root) root = 1;
 		gp[i] = melpe_divide_s(temp, root);
 	}			/* Main loop ends */
 
-	
+
 	//tttt=13;
-	
+
 	/* ------ Find the local peak of gp function ------- */
 	if (gp[MINPITCH + 1] < gp[MINPITCH])
 		peak[MINPITCH] = gp[MINPITCH];
@@ -389,10 +389,10 @@ static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 			peak[i] = 0;
 	}
 
-	
-	
+
+
 	//tttt=14;
-	
+
 	/* --- Fill in the TRACK struct using the first NODE peaks --- */
 	v_zap(index, MAXPITCH + 1);
 
@@ -402,7 +402,7 @@ static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 			if (peak[j] > peak[temp])
 				temp = j;
 		}
-		index[temp] = (int16_t) (i + 1);
+		index[temp] = (int16_t)(i + 1);
 		corx[i] = peak[temp];
 		peak[temp] = 0;
 		if (i == 0)
@@ -411,9 +411,9 @@ static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 
 	classStat->corx = corx[0];
 
-	
+
 	//tttt=15;
-	
+
 	j = 0;
 	for (i = MINPITCH; i <= MAXPITCH; i++) {
 		if (index[i] != 0) {
@@ -431,25 +431,25 @@ static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 		pitTrack->weight[j] = 0;
 	}
 
-	
-	
- //tttt=16;
-	
-	
-	// ---- Modify time domain correlation by muliple checking ---- //
+
+
+	//tttt=16;
+
+
+	   // ---- Modify time domain correlation by muliple checking ---- //
 	for (i = 0; i < NODE - 1; i++) {
-		for (j = (int16_t) (i + 1); j < NODE; j++) {
-			
+		for (j = (int16_t)(i + 1); j < NODE; j++) {
+
 			temp1 = pitTrack->pit[j];
 			temp2 = pitTrack->pit[i];
-			
-			if(temp2<=0) temp2=1;
+
+			if (temp2 <= 0) temp2 = 1;
 			temp = temp2;
 			while (temp < temp1) {
 				temp = melpe_add(temp, temp2);
 			}
-			
-			
+
+
 			temp2 = melpe_shr(temp2, 1);
 			temp2 = melpe_sub(temp, temp2);
 			if (temp2 >= temp1)
@@ -462,9 +462,9 @@ static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 			//   temp*pitTrack->pit[i])/pitTrack->pit[j]; //
 			temp = melpe_sub(pitTrack->pit[j], temp);
 			temp = melpe_abs_s(temp);
-			if(!pitTrack->pit[j]) pitTrack->pit[j]=1;
+			if (!pitTrack->pit[j]) pitTrack->pit[j] = 1;
 			temp2 = melpe_divide_s(temp, pitTrack->pit[j]);	// Q15 
-			
+
 
 			if (temp2 < X008_Q15) {
 				//      pitTrack->weight[j] -= pitTrack->weight[i]/5.0; //
@@ -476,12 +476,12 @@ static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 					temp2 = 0;
 				pitTrack->weight[j] = temp2;
 			}
-			
-			
+
+
 		}
 	}
-	
-	
+
+
 	//tttt=17;
 }
 
@@ -584,7 +584,7 @@ int16_t trackPitch(int16_t pitch, pitTrackParam * pitTrack)
 
 /******************************************************************
 **
-** Function:	pitLookahead	
+** Function:	pitLookahead
 **
 ** Description: Find pitch at onset segment
 **
@@ -612,24 +612,24 @@ int16_t pitLookahead(pitTrackParam * pitTrack, int16_t num)
 	for (i = melpe_sub(num, 1); i >= 0; i--) {
 		for (j = 0; j < NODE; j++) {
 			index =
-			    trackPitch(melpe_shl(pitTrack[i].pit[j], 7),
-				       &pitTrack[i + 1]);
+				trackPitch(melpe_shl(pitTrack[i].pit[j], 7),
+					&pitTrack[i + 1]);
 
 			/* pitTrack[i].cost[j] = PIT_WEIGHT*(1.0-pitTrack[i].weight[j]); */
 			L_sum =
-			    melpe_L_sub(LW_MAX, melpe_L_deposit_h(pitTrack[i].weight[j]));
+				melpe_L_sub(LW_MAX, melpe_L_deposit_h(pitTrack[i].weight[j]));
 			L_cost = melpe_L_mult(melpe_extract_h(L_sum), PIT_WEIGHT_Q5);	/* Q5 */
 
 			/*      pitTrack[i].cost[j] +=
 			   abs(pitTrack[i].pit[j] - pitTrack[i + 1].pit[index]); */
 			L_sum = melpe_L_sub(melpe_L_deposit_h(pitTrack[i].pit[j]),
-				      melpe_L_deposit_h(pitTrack[i + 1].pit[index]));
+				melpe_L_deposit_h(pitTrack[i + 1].pit[index]));
 			L_cost = melpe_L_add(L_cost, melpe_L_shl(melpe_L_abs(L_sum), 5));	/* Q5 */
 
 			/* pitTrack[i].cost[j] += pitTrack[i+1].cost[index]; */
 			L_cost =
-			    melpe_L_add(L_cost,
-				  melpe_L_deposit_h(pitTrack[i + 1].cost[index]));
+				melpe_L_add(L_cost,
+					melpe_L_deposit_h(pitTrack[i + 1].cost[index]));
 			pitTrack[i].cost[j] = melpe_extract_h(L_cost);	/* Q5 */
 		}
 	}
@@ -662,7 +662,7 @@ int16_t ratio(int16_t x, int16_t y)
 
 	diff = melpe_sub(x, y);
 	diff = melpe_abs_s(diff);
-	larger = (int16_t) ((x > y) ? x : y);
+	larger = (int16_t)((x > y) ? x : y);
 	return (melpe_divide_s(diff, larger));
 }
 
@@ -728,7 +728,7 @@ int16_t updateEn(int16_t prev_en, int16_t ifact, int16_t curr_en)
 		temp1 = melpe_shr(temp1, 1);	/* Q11 */
 		result = melpe_add(temp1, curr_en);	/* Q11 */
 	} else {		/* Case (c) */
-		/* temp1 = (curr_en - prev_en) is between -1 and 3. */
+	 /* temp1 = (curr_en - prev_en) is between -1 and 3. */
 		temp1 = melpe_shl(temp1, 2);	/* Q12 */
 		temp1 = pow10_fxp(temp1, 5);	/* Q5 */
 		temp1 = interp_scalar(temp1, ONE_Q5, ifact);	/* Q5 */

@@ -35,7 +35,7 @@
 #define PITCH_RANGE				5
 #define SQRT_PIT_SUBFRAME_Q11	19429	/* sqrt(PIT_SUBFRAME) * (1 << 11) */
 #define SILENCE_DB_Q11			6144	/* Originally 30.  subEnergy is */
-				     /* changed to 1/10 of its floating point */
+					 /* changed to 1/10 of its floating point */
 					  /* counterpart.  30/10 * (1 << 11). */
 #define TWO_Q11					4096	/* 2 * (1 << 11) */
 #define THREE_Q11				6144	/* 3 * (1 << 11) */
@@ -146,7 +146,7 @@ void classify(int16_t inbuf[], classParam * classStat, int16_t autocorr[])
 		sigbuf_len = PIT_COR_LEN;
 
 		v_equ(&(sigbuf_in[BPF_ORD / 3]),
-		      &(inbuf[(PIT_SUBFRAME - PIT_COR_LEN) / 2]), sigbuf_len);
+			&(inbuf[(PIT_SUBFRAME - PIT_COR_LEN) / 2]), sigbuf_len);
 	} else {
 		sigbuf_in = sigbuf_a + PIT_COR_LEN - PIT_SUBFRAME;
 		sigbuf_out = sigbuf_b + PIT_COR_LEN - PIT_SUBFRAME;
@@ -156,9 +156,9 @@ void classify(int16_t inbuf[], classParam * classStat, int16_t autocorr[])
 		/* on the oddity of BPF_ORD/2.                                        */
 
 		v_equ(&(sigbuf_in[BPF_ORD / 3]),
-		      &(inbuf[(PIT_COR_LEN - PIT_SUBFRAME) / 2]), sigbuf_len);
+			&(inbuf[(PIT_COR_LEN - PIT_SUBFRAME) / 2]), sigbuf_len);
 		v_equ(&(sigbuf_out[BPF_ORD / 3 - PIT_COR_LEN + PIT_SUBFRAME]),
-		      back_sigbuf, PIT_COR_LEN - PIT_SUBFRAME);
+			back_sigbuf, PIT_COR_LEN - PIT_SUBFRAME);
 	}
 
 	ptr_bpf_num = bpf_num;	/* It will point to bpf_num[3*i] */
@@ -172,14 +172,14 @@ void classify(int16_t inbuf[], classParam * classStat, int16_t autocorr[])
 		for (j = BPF_ORD / 3; j < melpe_add(sigbuf_len, BPF_ORD / 3); j++) {
 			L_temp = melpe_L_mult(sigbuf_in[j], ptr_bpf_num[0]);
 			L_temp =
-			    melpe_L_mac(L_temp, sigbuf_in[j - 1], ptr_bpf_num[1]);
+				melpe_L_mac(L_temp, sigbuf_in[j - 1], ptr_bpf_num[1]);
 			L_temp =
-			    melpe_L_mac(L_temp, sigbuf_in[j - 2], ptr_bpf_num[2]);
+				melpe_L_mac(L_temp, sigbuf_in[j - 2], ptr_bpf_num[2]);
 
 			L_temp =
-			    melpe_L_mac(L_temp, sigbuf_out[j - 1], ptr_bpf_den[0]);
+				melpe_L_mac(L_temp, sigbuf_out[j - 1], ptr_bpf_den[0]);
 			L_temp =
-			    melpe_L_mac(L_temp, sigbuf_out[j - 2], ptr_bpf_den[1]);
+				melpe_L_mac(L_temp, sigbuf_out[j - 2], ptr_bpf_den[1]);
 
 			L_temp = melpe_L_shl(L_temp, 2);
 
@@ -204,7 +204,7 @@ void classify(int16_t inbuf[], classParam * classStat, int16_t autocorr[])
 	v_equ(&(bpfdel[BPF_ORD]), &(sigbuf_out[PIT_COR_LEN]), BPF_ORD / 3);
 
 	v_equ(back_sigbuf, &(sigbuf_out[BPF_ORD / 3 + PIT_SUBFRAME]),
-	      PIT_COR_LEN - PIT_SUBFRAME);
+		PIT_COR_LEN - PIT_SUBFRAME);
 
 	/* Compute subframe energy.  Note that L_sum1 can have a large dynamic    */
 	/* range as sum1 can be as small as 0 and as large as                     */
@@ -324,28 +324,28 @@ void classify(int16_t inbuf[], classParam * classStat, int16_t autocorr[])
 	if (classStat->subEnergy < SILENCE_DB_Q11)
 		classy = SILENCE;
 	else if (classStat->subEnergy <
-		 interp_scalar(voicedEn, silenceEn, X065_Q15)) {
+		interp_scalar(voicedEn, silenceEn, X065_Q15)) {
 		/* quite possible it is silence or UNVOICED */
 		/* unless the noise level is very high          */
 		if ((classStat->zeroCrosRate > X06_Q15) &&
-		    ((classStat->corx < X04_Q15) || (lowBandCorx < X05_Q15)))
+			((classStat->corx < X04_Q15) || (lowBandCorx < X05_Q15)))
 			classy = UNVOICED;
 		else if ((lowBandCorx > X07_Q15) || ((lowBandCorx > X04_Q15) &&
-						     (classStat->corx >
-						      X07_Q15)))
+			(classStat->corx >
+				X07_Q15)))
 			classy = VOICED;
 		else if ((zeroCrosRateDiff > X03_Q15)
-			 || (subEnergyDiff > TWO_Q11)
-			 || (classStat->peakiness > X16_Q11))
+			|| (subEnergyDiff > TWO_Q11)
+			|| (classStat->peakiness > X16_Q11))
 			classy = TRANSITION;
 		else if ((classStat->zeroCrosRate > X055_Q15) ||
-			 ((lowhighBandDiff < X05_Q12) &&
-			  (classStat->zeroCrosRate > X04_Q15)))
+			((lowhighBandDiff < X05_Q12) &&
+			(classStat->zeroCrosRate > X04_Q15)))
 			classy = UNVOICED;
 		else
 			classy = SILENCE;
 	} else if ((zeroCrosRateDiff > X02_Q15) || (subEnergyDiff > TWO_Q11) ||
-		   (classStat->peakiness > X16_Q11)) {
+		(classStat->peakiness > X16_Q11)) {
 		if ((lowBandCorx > X07_Q15) || (classStat->corx > X08_Q15))
 			classy = VOICED;
 		else
@@ -353,10 +353,10 @@ void classify(int16_t inbuf[], classParam * classStat, int16_t autocorr[])
 	} else if (classStat->zeroCrosRate < X02_Q15) {
 		/* unless very low energy, it should be voiced */
 		if ((lowBandCorx > X05_Q15) ||
-		    ((lowBandCorx > X03_Q15) && (classStat->corx > X06_Q15)))
+			((lowBandCorx > X03_Q15) && (classStat->corx > X06_Q15)))
 			classy = VOICED;
 		else if (classStat->subEnergy >
-			 interp_scalar(voicedEn, silenceEn, X03_Q15)) {
+			interp_scalar(voicedEn, silenceEn, X03_Q15)) {
 			if (classStat->peakiness > X15_Q11)
 				classy = TRANSITION;
 			else
@@ -365,11 +365,11 @@ void classify(int16_t inbuf[], classParam * classStat, int16_t autocorr[])
 			classy = SILENCE;
 	} else if (classStat->zeroCrosRate < X05_Q15) {	/* not sure */
 		if ((lowBandCorx > X055_Q15) ||
-		    ((lowBandCorx > X03_Q15) && (classStat->corx > X065_Q15)))
+			((lowBandCorx > X03_Q15) && (classStat->corx > X065_Q15)))
 			classy = VOICED;
 		else if ((classStat->subEnergy <
-			  interp_scalar(voicedEn, silenceEn, X06_Q15)) &&
-			 (lowhighBandDiff > ONE_Q12))
+			interp_scalar(voicedEn, silenceEn, X06_Q15)) &&
+			(lowhighBandDiff > ONE_Q12))
 			classy = SILENCE;
 		else if (classStat->peakiness > X14_Q11)
 			classy = TRANSITION;
@@ -378,7 +378,7 @@ void classify(int16_t inbuf[], classParam * classStat, int16_t autocorr[])
 	} else if (classStat->zeroCrosRate < X07_Q15) {
 		/* quite possible unvoiced */
 		if (((lowBandCorx > X06_Q15) && (classStat->corx > X03_Q15)) ||
-		    ((lowBandCorx > X04_Q15) && (classStat->corx > X07_Q15)))
+			((lowBandCorx > X04_Q15) && (classStat->corx > X07_Q15)))
 			classy = VOICED;
 		else if (classStat->peakiness > X15_Q11)
 			classy = TRANSITION;
@@ -386,7 +386,7 @@ void classify(int16_t inbuf[], classParam * classStat, int16_t autocorr[])
 			classy = UNVOICED;
 	} else {		/* very likely unvoiced */
 		if (((lowBandCorx > X065_Q15) && (classStat->corx > X03_Q15)) ||
-		    ((lowBandCorx > X045_Q15) && (classStat->corx > X07_Q15)))
+			((lowBandCorx > X045_Q15) && (classStat->corx > X07_Q15)))
 			classy = VOICED;
 		else if (classStat->peakiness > TWO_Q11)
 			classy = TRANSITION;
@@ -521,13 +521,13 @@ static void frac_cor(int16_t inbuf[], int16_t pitch, int16_t * cor)
 	int32_t L_r0, L_rk, L_temp;	/* Q7 */
 	int64_t ACC_r0, ACC_rk, ACC_A;	/* Emulating 40Bit-Accumulator */
 
-	
+
 //ptch=pitch;
-	
+
 //win_win=0x01;
 
-	
-	
+
+
 	/* ------ Calculate the autocorrelation function ------- */
 	/* This is the new version of the autocorrelation function */
 	/* (Andre Ebner, 11/30/99) */
@@ -540,63 +540,63 @@ static void frac_cor(int16_t inbuf[], int16_t pitch, int16_t * cor)
 
 	ACC_r0 = 0;
 	for (i = 0; i < (PIT_COR_LEN - highPitch); i++) {
-		ACC_r0 = melpe_L40_mac(ACC_r0, inbuf[i], inbuf[i]);  
+		ACC_r0 = melpe_L40_mac(ACC_r0, inbuf[i], inbuf[i]);
 	}
-	
-//win_win=0x02;
-	
-//------------------------------------------------------
-ACC_r0=melpe_L40_satup(ACC_r0);
-ACC_r0=melpe_L40_satdown(ACC_r0);	
-//------------------------------------------------------	
-	
-	
+
+	//win_win=0x02;
+
+	//------------------------------------------------------
+	ACC_r0 = melpe_L40_satup(ACC_r0);
+	ACC_r0 = melpe_L40_satdown(ACC_r0);
+	//------------------------------------------------------	
+
+
 	if (ACC_r0 == 0)
 		ACC_r0 = 1;
-	
-	
+
+
 	r0_shift = melpe_norm32(ACC_r0);
 	ACC_r0 = melpe_L40_shl(ACC_r0, r0_shift);
-	
-	
-	L_r0 = (int32_t) ACC_r0;
+
+
+	L_r0 = (int32_t)ACC_r0;
 
 	ACC_rk = 0;
 	for (i = highPitch; i < PIT_COR_LEN; i++) {
 		ACC_rk = melpe_L40_mac(ACC_rk, inbuf[i], inbuf[i]);	/* Q31 */
 	}
-	
-//win_win=0x03;
-	
-	//------------------------------------------------------
- ACC_rk=melpe_L40_satup(ACC_rk);
- ACC_rk=melpe_L40_satdown(ACC_rk);	
-//------------------------------------------------------	
-	
+
+	//win_win=0x03;
+
+		//------------------------------------------------------
+	ACC_rk = melpe_L40_satup(ACC_rk);
+	ACC_rk = melpe_L40_satdown(ACC_rk);
+	//------------------------------------------------------	
+
 	if (ACC_rk == 0)
 		ACC_rk = 1;
-	
+
 	rk_shift = melpe_norm32(ACC_rk);
 	ACC_rk = melpe_L40_shl(ACC_rk, rk_shift);
 
-	
-	L_rk = (int32_t) ACC_rk;
+
+	L_rk = (int32_t)ACC_rk;
 
 	ACC_A = 0;
-	
+
 	for (i = 0; i < PIT_COR_LEN - highPitch; i++) {
-	
+
 		ACC_A = melpe_L40_mac(ACC_A, inbuf[i], inbuf[i + highPitch]);	/* Q31 */
 
 	}
-	
-//win_win=0x04;
-	
-	//------------------------------------------------------
- ACC_A=melpe_L40_satup(ACC_A);
- ACC_A=melpe_L40_satdown(ACC_A);	
-//------------------------------------------------------	
-	
+
+	//win_win=0x04;
+
+		//------------------------------------------------------
+	ACC_A = melpe_L40_satup(ACC_A);
+	ACC_A = melpe_L40_satdown(ACC_A);
+	//------------------------------------------------------	
+
 	shift = melpe_add(r0_shift, rk_shift);
 	if (shift & 1) {
 		L_r0 = melpe_L_shr(L_r0, 1);
@@ -604,90 +604,90 @@ ACC_r0=melpe_L40_satdown(ACC_r0);
 		shift = melpe_add(r0_shift, rk_shift);
 	}
 	shift = melpe_shr(shift, 1);
-	
-//win_win=0x05;
-	
+
+	//win_win=0x05;
+
 	ACC_A = melpe_L40_shl(ACC_A, shift);
 
-//win_win=0x51;
-	
+	//win_win=0x51;
+
 	temp = melpe_mult(melpe_extract_h(L_r0), melpe_extract_h(L_rk));
-	if(temp<0) temp=0;
+	if (temp < 0) temp = 0;
 	//win_win=0x52;
 	root = sqrt_Q15(temp);
-	L_temp = (int32_t) ACC_A;
+	L_temp = (int32_t)ACC_A;
 	//win_win=0x53;
 	temp = melpe_extract_h(L_temp);
 	if (temp < 0)
 		temp = 0;	/* Negative Autocorrelation doesn't make sense here */
-	if(root<=0) root=1;
+	if (root <= 0) root = 1;
 	//win_win=0x54;
 	maxgp = melpe_divide_s(temp, root);
-	
+
 	//win_win=0x06;
-	
+
 //--------------------------	
 	if (lowPitch < MINPITCH)
 		lowPitch = MINPITCH;
 	if (highPitch > MAXPITCH)
 		highPitch = MAXPITCH;
-//--------------------------	
-	
+	//--------------------------	
+
 	lowStart = 0;
 	highStart = highPitch;
 	win = melpe_sub(PIT_COR_LEN, highPitch);
-	
-//-------------------------------	
-	//win_win=0x07;
-	
-	//h_pit=highPitch;
-	//l_pit=lowPitch;	
-	i=highPitch-1;
-	if(i<lowPitch) i=lowPitch;
-//-----------------------------------
 
-//win_win=0x08;
-	
-	//for (i = melpe_sub(highPitch, 1); i >= lowPitch; i--) {
-  for (; i >= lowPitch; i--) {	
+	//-------------------------------	
+		//win_win=0x07;
+
+		//h_pit=highPitch;
+		//l_pit=lowPitch;	
+	i = highPitch - 1;
+	if (i < lowPitch) i = lowPitch;
+	//-----------------------------------
+
+	//win_win=0x08;
+
+		//for (i = melpe_sub(highPitch, 1); i >= lowPitch; i--) {
+	for (; i >= lowPitch; i--) {
 		if (i % 2 == 0) {
 			ACC_r0 = L_r0;
-			
+
 			ACC_r0 = melpe_L40_shr(ACC_r0, r0_shift);
-		
-			
+
+
 			//h_ind=lowStart;
-			
+
 			//ACC_r0 = melpe_L40_msu(ACC_r0, inbuf[lowStart], inbuf[lowStart]);	
 			//ACC_r0 =melpe_L40_mac(ACC_r0, inbuf[lowStart + win],inbuf[lowStart + win]);
-			
-			ACC_r0-=(int32_t)inbuf[lowStart]*inbuf[lowStart];
-			ACC_r0+=(int32_t)inbuf[lowStart+win]*inbuf[lowStart+win];
-			
+
+			ACC_r0 -= (int32_t)inbuf[lowStart] * inbuf[lowStart];
+			ACC_r0 += (int32_t)inbuf[lowStart + win] * inbuf[lowStart + win];
+
 			if (ACC_r0 == 0)
 				ACC_r0 = 1;
 			r0_shift = melpe_norm32(ACC_r0);
 			ACC_r0 = melpe_L40_shl(ACC_r0, r0_shift);
-			L_r0 = (int32_t) ACC_r0;
+			L_r0 = (int32_t)ACC_r0;
 			lowStart++;
-			if(lowStart<0) lowStart=0;
-			if(lowStart>MAXPITCH) lowStart=MAXPITCH;
+			if (lowStart < 0) lowStart = 0;
+			if (lowStart > MAXPITCH) lowStart = MAXPITCH;
 		} else {
 			highStart--;
-			if(highStart<0) highStart=0;
-			
+			if (highStart < 0) highStart = 0;
+
 			ACC_rk = L_rk;
 			ACC_rk = melpe_L40_shr(ACC_rk, rk_shift);
-			
+
 			//win_win=0x09;
 			//l_ind=highStart;
-			
+
 			//ACC_rk =melpe_L40_mac(ACC_rk, inbuf[highStart], inbuf[highStart]);
 			//ACC_rk =melpe_L40_msu(ACC_rk, inbuf[highStart + win],inbuf[highStart + win]);
-			if(win<0) win=0;
-			ACC_rk+=(int32_t)inbuf[highStart]*inbuf[highStart];
+			if (win < 0) win = 0;
+			ACC_rk += (int32_t)inbuf[highStart] * inbuf[highStart];
 			//win_win=0x91;
-			ACC_rk-=(int32_t)inbuf[highStart+win]*inbuf[highStart+win];
+			ACC_rk -= (int32_t)inbuf[highStart + win] * inbuf[highStart + win];
 			//win_win=0x92;
 			if (ACC_rk == 0)
 				ACC_rk = 1;
@@ -695,34 +695,34 @@ ACC_r0=melpe_L40_satdown(ACC_r0);
 			//win_win=0x93;
 			ACC_rk = melpe_L40_shl(ACC_rk, rk_shift);
 			//win_win=0x94;
-			L_rk = (int32_t) ACC_rk;
+			L_rk = (int32_t)ACC_rk;
 		}
 		ACC_A = 0;
 		//win_win=0x95;
 		for (j = lowStart; j < lowStart + win; j++) {
 			//ACC_A = melpe_L40_mac(ACC_A, inbuf[j], inbuf[j + i]);
-			ACC_A+=(int32_t)inbuf[j]*inbuf[j+i];
+			ACC_A += (int32_t)inbuf[j] * inbuf[j + i];
 		}
 		//win_win=0x0A;
-		
+
 		//------------------------------------------------------
-    ACC_A=melpe_L40_satup(ACC_A);
-    ACC_A=melpe_L40_satdown(ACC_A);	
-//------------------------------------------------------	
-		//win_win=0x0B;
+		ACC_A = melpe_L40_satup(ACC_A);
+		ACC_A = melpe_L40_satdown(ACC_A);
+		//------------------------------------------------------	
+				//win_win=0x0B;
 		shift = melpe_add(r0_shift, rk_shift);
 		if (shift & 1) {
 			L_r0 = melpe_L_shr(L_r0, 1);
 			r0_shift = melpe_sub(r0_shift, 1);
 			shift = melpe_add(r0_shift, rk_shift);
 		}
-		
+
 		//win_win=0x0C;
 		shift = melpe_shr(shift, 1);
 		ACC_A = melpe_L40_shl(ACC_A, shift);
 		temp = melpe_mult(melpe_extract_h(L_r0), melpe_extract_h(L_rk));
 		root = sqrt_Q15(temp);
-		L_temp = (int32_t) ACC_A;
+		L_temp = (int32_t)ACC_A;
 		temp = melpe_extract_h(L_temp);
 		gp = melpe_divide_s(temp, root);
 		if (gp > maxgp)

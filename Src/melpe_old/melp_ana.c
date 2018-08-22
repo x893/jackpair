@@ -97,7 +97,7 @@ int16_t top_lpc[LPC_ORD];
 /* Prototype */
 
 static void melp_ana(int16_t sp_in[], struct melp_param *par,
-		     int16_t subnum);
+	int16_t subnum);
 void sc_ana(struct melp_param *par);
 static BOOLEAN subenergyRelation1(classParam classStat[], int16_t curTrack);
 static BOOLEAN subenergyRelation2(classParam classStat[], int16_t curTrack);
@@ -143,16 +143,16 @@ void analysis(int16_t sp_in[], struct melp_param *par)
 
 		if (rate == RATE2400)
 			dc_rmv(&sp_in[i * FRAME], &hpspeech[OLD_IN_BEG],
-			       dcdelin, dcdelout_hi, dcdelout_lo, FRAME);
+				dcdelin, dcdelout_hi, dcdelout_lo, FRAME);
 		else
 			dc_rmv(&sp_in[i * FRAME], &hpspeech[IN_BEG + i * FRAME],
-			       dcdelin, dcdelout_hi, dcdelout_lo, FRAME);
+				dcdelin, dcdelout_hi, dcdelout_lo, FRAME);
 
 		melp_ana(&hpspeech[i * FRAME], &par[i], i);
 	}
 
-		
-	
+
+
 	// ---- New routine to refine the parameters for block ---- //
 
 	if (rate == RATE1200)
@@ -168,10 +168,20 @@ void analysis(int16_t sp_in[], struct melp_param *par)
 		v_equ(&(lpc[1]), top_lpc, LPC_ORD);
 		vq_lspw(weights, par->lsf, &(lpc[1]), LPC_ORD);
 
-		//      msvq_enc(par->lsf, weights, par->lsf, vq_par); 
-		vq_ms4(msvq_cb, par->lsf, msvq_cb_mean, msvq_levels, MSVQ_M, 4,
-		       LPC_ORD, weights, par->lsf, quant_par.msvq_index,
-		       MSVQ_MAXCNT);
+		//      msvq_enc(par->lsf, weights, par->lsf, vq_par);
+		vq_ms4(
+			msvq_cb,
+			par->lsf,
+			msvq_cb_mean,
+			msvq_levels,
+			MSVQ_M,
+			4,
+			LPC_ORD,
+			weights,
+			par->lsf,
+			quant_par.msvq_index,
+			MSVQ_MAXCNT
+			);
 
 		// Force minimum LSF bandwidth (separation) //
 		lpc_clamp(par->lsf, BWMIN_Q15, LPC_ORD);
@@ -179,8 +189,8 @@ void analysis(int16_t sp_in[], struct melp_param *par)
 	} else
 		lsf_vq(par);
 
-	
-	
+
+
 	if (rate == RATE2400) {
 		// Quantize logarithmic pitch period 
 		// Reserve all zero code for completely unvoiced 
@@ -195,7 +205,7 @@ void analysis(int16_t sp_in[], struct melp_param *par)
 	if (rate == RATE2400) {
 		// Quantize gain terms with uniform log quantizer  
 		q_gain(par->gain, quant_par.gain_index, GN_QLO_Q8, GN_QUP_Q8,
-		       GN_QLEV_M1, GN_QLEV_M1_Q10, 0, 5);
+			GN_QLEV_M1, GN_QLEV_M1_Q10, 0, 5);
 	} else
 		gain_vq(par);
 
@@ -214,10 +224,10 @@ void analysis(int16_t sp_in[], struct melp_param *par)
 				MAX_JITTER_Q15, 2, ONE_Q15, 1, 7);
 	}
 
-// Quantize bandpass voicing 
+	// Quantize bandpass voicing 
 	if (rate == RATE2400)
 		par[0].uv_flag = q_bpvc(par[0].bpvc, &(quant_par.bpvc_index[0]),
-					NUM_BANDS);
+			NUM_BANDS);
 	else
 		quant_bp(par, num_frames);
 
@@ -225,9 +235,9 @@ void analysis(int16_t sp_in[], struct melp_param *par)
 		quant_jitter(par);
 
 
-	
-	
-	
+
+
+
 	// Calculate Fourier coeffs of residual from quantized LPC 
 	for (i = 0; i < num_frames; i++) {
 
@@ -236,11 +246,11 @@ void analysis(int16_t sp_in[], struct melp_param *par)
 		if (!par[i].uv_flag) {
 			lpc_lsp2pred(par[i].lsf, &(lpc[1]), LPC_ORD);
 			zerflt(&hpspeech
-			       [(i * FRAME + FRAME_END - (LPC_FRAME / 2))], lpc,
-			       sigbuf, LPC_ORD, LPC_FRAME);
+				[(i * FRAME + FRAME_END - (LPC_FRAME / 2))], lpc,
+				sigbuf, LPC_ORD, LPC_FRAME);
 			window(sigbuf, win_cof, sigbuf, LPC_FRAME);
 			find_harm(sigbuf, par[i].fs_mag, par[i].pitch, NUM_HARM,
-				  LPC_FRAME);
+				LPC_FRAME);
 		}
 	}
 
@@ -255,19 +265,19 @@ void analysis(int16_t sp_in[], struct melp_param *par)
 		// replaced directly with constants or other variables.              
 
 		vq_enc(fsvq_cb, par->fs_mag, FS_LEVELS, NUM_HARM, par->fs_mag,
-		       &(quant_par.fsvq_index));
+			&(quant_par.fsvq_index));
 	} else
 		quant_fsmag(par);
 
-	
-	
+
+
 	for (i = 0; i < num_frames; i++)
 		quant_par.uv_flag[i] = par[i].uv_flag;
 
-	
-	
-	
-	
+
+
+
+
 	//Write channel bitstream 
 	if (rate == RATE2400)
 		melp_chn_write(&quant_par, chbuf);
@@ -275,8 +285,8 @@ void analysis(int16_t sp_in[], struct melp_param *par)
 	else
 		low_rate_chn_write(&quant_par);
 #endif
-  
-	
+
+
 
 	// Update delay buffers for next block //
 	v_equ(hpspeech, &(hpspeech[num_frames * FRAME]), IN_BEG);
@@ -295,7 +305,7 @@ void analysis(int16_t sp_in[], struct melp_param *par)
 /* ========================================================================== */
 
 static void melp_ana(int16_t speech[], struct melp_param *par,
-		     int16_t subnum)
+	int16_t subnum)
 {
 	register int16_t i;
 	static BOOLEAN firstTime = TRUE;
@@ -319,8 +329,8 @@ static void melp_ana(int16_t speech[], struct melp_param *par,
 		firstTime = FALSE;
 	}
 
-	
-	
+
+
 	// Copy input speech to pitch window and lowpass filter //
 
 	// The following filter block was in use in the fixed point implementa-   //
@@ -344,35 +354,35 @@ static void melp_ana(int16_t speech[], struct melp_param *par,
 	v_equ(&sigbuf[LPF_ORD], &speech[PITCH_BEG], PITCH_FR);
 	for (section = 0; section < LPF_ORD / 2; section++) {
 		for (i = (int16_t) (section * 2);
-		     i < (int16_t) (section * 2 + 2); i++) {
+			i < (int16_t) (section * 2 + 2); i++) {
 			temp_delin[i] =
-			    sigbuf[LPF_ORD + FRAME - 1 - i + section * 2];
+				sigbuf[LPF_ORD + FRAME - 1 - i + section * 2];
 		}
 		iir_2nd_s(&sigbuf[LPF_ORD], &lpf_den[section * 3],
-			  &lpf_num[section * 3], &sigbuf[LPF_ORD],
-			  &lpfsp_delin[section * 2], &lpfsp_delout[section * 2],
-			  FRAME);
+			&lpf_num[section * 3], &sigbuf[LPF_ORD],
+			&lpfsp_delin[section * 2], &lpfsp_delout[section * 2],
+			FRAME);
 		v_equ(&(temp_delout[2 * section]), &(lpfsp_delout[2 * section]),
-		      2);
+			2);
 		iir_2nd_s(&sigbuf[LPF_ORD + FRAME], &lpf_den[section * 3],
-			  &lpf_num[section * 3], &sigbuf[LPF_ORD + FRAME],
-			  &lpfsp_delin[section * 2], &lpfsp_delout[section * 2],
-			  PITCH_FR - FRAME);
+			&lpf_num[section * 3], &sigbuf[LPF_ORD + FRAME],
+			&lpfsp_delin[section * 2], &lpfsp_delout[section * 2],
+			PITCH_FR - FRAME);
 		// restore delay buffers for the next overlapping frame //
 		v_equ(&(lpfsp_delin[2 * section]), &(temp_delin[2 * section]),
-		      2);
+			2);
 		v_equ(&(lpfsp_delout[2 * section]), &(temp_delout[2 * section]),
-		      2);
+			2);
 	}
 
 
-	
+
 	f_pitch_scale(&sigbuf[LPF_ORD], &sigbuf[LPF_ORD], PITCH_FR);
 
 	// Perform global pitch search at frame end on lowpass speech signal //
 	// Note: avoid short pitches due to formant tracking //
 	fpitch[1] = find_pitch(&sigbuf[LPF_ORD + (PITCH_FR / 2)], &dontcare,
-			       (2 * PITCHMIN), PITCHMAX, PITCHMAX);
+		(2 * PITCHMIN), PITCHMAX, PITCHMAX);
 	fpitch[1] = melpe_shl(fpitch[1], 7);	// fpitch in Q7 //
 
 
@@ -386,23 +396,23 @@ static void melp_ana(int16_t speech[], struct melp_param *par,
 	else
 		par->jitter = 0;
 
-	
-	 
-	 
+
+
+
 	// Calculate LPC for end of frame.  Note that we compute (LPC_ORD + 1)    //
 	// entries of auto_corr[] for RATE2400 but EN_FILTER_ORDER entries for    //
 	// RATE1200 because bandEn() for classify() of "classify.c" needs so many //
 	// entries for computation.  lpc_schur() needs (LPC_ORD + 1) entries.     //
 
-	
-	
+
+
 	if (rate == RATE2400)
 		lpc_autocorr(&speech[(FRAME_END - (LPC_FRAME / 2))], win_cof,
-			     auto_corr, HF_CORR_Q15, LPC_ORD, LPC_FRAME);
+			auto_corr, HF_CORR_Q15, LPC_ORD, LPC_FRAME);
 	else
 		lpc_autocorr(&speech[(FRAME_END - (LPC_FRAME / 2))], win_cof,
-			     auto_corr, HF_CORR_Q15, EN_FILTER_ORDER - 1,
-			     LPC_FRAME);
+			auto_corr, HF_CORR_Q15, EN_FILTER_ORDER - 1,
+			LPC_FRAME);
 
 	lpc[0] = ONE_Q12;
 	lpc_schur(auto_corr, &(lpc[1]), LPC_ORD);	// lpc in Q12 //
@@ -444,24 +454,24 @@ static void melp_ana(int16_t speech[], struct melp_param *par,
 		cur_track = (int16_t) (CUR_TRACK + subnum * PIT_SUBNUM);
 		for (i = 0; i < PIT_SUBNUM; i++) {
 			pitchAuto(&speech
-				  [FRAME_END + i * PIT_SUBFRAME +
-				   PIT_COR_LEN / 2],
-				  &pitTrack[cur_track + i + 1],
-				  &classStat[cur_track + i + 1]);
-			
+				[FRAME_END + i * PIT_SUBFRAME +
+				PIT_COR_LEN / 2],
+				&pitTrack[cur_track + i + 1],
+				&classStat[cur_track + i + 1]);
+
 			classify(&speech
-				 [FRAME_END + i * PIT_SUBFRAME +
-				  PIT_SUBFRAME / 2],
-				 &classStat[cur_track + i + 1], auto_corr);
+				[FRAME_END + i * PIT_SUBFRAME +
+				PIT_SUBFRAME / 2],
+				&classStat[cur_track + i + 1], auto_corr);
 		}
 	}
 
 
-	
+
 	// Calculate overall frame pitch using lowpass filtered residual //
 	par->pitch = pitch_ana(&speech[FRAME_END], &sigbuf[LPF_ORD + PITCHMAX],
-			       sub_pitch, pitch_avg, &pcorr);
-	
+		sub_pitch, pitch_avg, &pcorr);
+
 
 
 	// Calculate gain of input speech for each gain subframe //
@@ -470,8 +480,8 @@ static void melp_ana(int16_t speech[], struct melp_param *par,
 			// voiced mode: pitch synchronous window length //
 			temp = sub_pitch;
 			par->gain[i] =
-			    gain_ana(&speech[FRAME_BEG + (i + 1) * GAINFR],
-				     temp, MIN_GAINFR, PITCHMAX_X2);
+				gain_ana(&speech[FRAME_BEG + (i + 1) * GAINFR],
+					temp, MIN_GAINFR, PITCHMAX_X2);
 		} else {
 			if (rate == RATE2400)
 				temp = (int16_t) GAIN_PITCH_Q7;
@@ -479,8 +489,8 @@ static void melp_ana(int16_t speech[], struct melp_param *par,
 				temp = (int16_t) 15258;
 			// (1.33*GAINFR - 0.5) << 7 //
 			par->gain[i] =
-			    gain_ana(&speech[FRAME_BEG + (i + 1) * GAINFR],
-				     temp, 0, PITCHMAX_X2);
+				gain_ana(&speech[FRAME_BEG + (i + 1) * GAINFR],
+					temp, 0, PITCHMAX_X2);
 		}
 	}
 
@@ -503,8 +513,8 @@ static void melp_ana(int16_t speech[], struct melp_param *par,
 
 	// Update delay buffers for next frame //
 	fpitch[0] = fpitch[1];
-	 
-	
+
+
 }
 
 /* ======================================= */
@@ -575,7 +585,7 @@ void sc_ana(struct melp_param *par)
 	int16_t temp1, temp2;
 	int16_t w1_w2;	// Q15 //
 
-	
+
 	// ======== Update silence energy ======== //
 	for (i = 0; i < NF; i++) {
 
@@ -583,12 +593,12 @@ void sc_ana(struct melp_param *par)
 
 		// ---- update silence energy ---- //
 		if ((classStat[curTrack].classy == SILENCE) &&
-		    (classStat[curTrack - 1].classy == SILENCE)) {
+			(classStat[curTrack - 1].classy == SILENCE)) {
 			//      silenceEn = log10(EN_UP_RATE * pow(10.0, silenceEn) +
 			 //  (1.0 - EN_UP_RATE) * 
 			 //  pow(10.0, classStat[curTrack].subEnergy)); //
 			silenceEn = updateEn(silenceEn, EN_UP_RATE_Q15,
-					     classStat[curTrack].subEnergy);
+				classStat[curTrack].subEnergy);
 		}
 	}
 
@@ -604,7 +614,7 @@ void sc_ana(struct melp_param *par)
 		voicedCnt = 0;
 
 	if (!uv[1] && !uv[2] && !uv[3]
-	    && !subenergyRelation1(classStat, curTrack)) {
+		&& !subenergyRelation1(classStat, curTrack)) {
 		// ---- process only voiced frames ---- //
 		// check if it is offset first //
 		if ((voicedCnt < 2) || subenergyRelation2(classStat, curTrack)) {
@@ -615,12 +625,12 @@ void sc_ana(struct melp_param *par)
 				if (ratio(pitCand, par[1].pitch) < X015_Q15)
 					par[0].pitch = pitCand;
 				else if ((ratio(par[1].pitch, par[2].pitch) <
-					  X015_Q15)
-					 && (ratio(par[0].pitch, par[1].pitch) >
-					     X015_Q15))
+					X015_Q15)
+					&& (ratio(par[0].pitch, par[1].pitch) >
+						X015_Q15))
 					par[0].pitch = par[1].pitch;
 				else if (ratio(par[0].pitch, par[1].pitch) >
-					 X015_Q15)
+					X015_Q15)
 					par[0].pitch = pitCand;
 			}
 		} else if (!uv[0]) {
@@ -630,11 +640,11 @@ void sc_ana(struct melp_param *par)
 			temp2 = melpe_sub(par[1].pitch, par[0].pitch);
 			index2 = melpe_shr(temp2, 7);	// Q0 //
 			if ((melpe_abs_s(index1) > 5) && (melpe_abs_s(index2) > 5) &&
-			    (index1 * index2 < 0)) {
+				(index1 * index2 < 0)) {
 				// here is a pitch jump //
 				pitCand = pitLookahead(&pitTrack[curTrack], 3);
 				if ((ratio(prev_pitch, pitCand) < X015_Q15) ||
-				    (ratio(pitCand, par[1].pitch) < X02_Q15))
+					(ratio(pitCand, par[1].pitch) < X02_Q15))
 					par[0].pitch = pitCand;
 				else {
 					//      par[0].pitch = (prev_pitch + par[1].pitch)/2; //
@@ -643,42 +653,42 @@ void sc_ana(struct melp_param *par)
 					par[0].pitch = melpe_add(temp1, temp2);	// Q7 //
 				}
 			} else if ((ratio(par[0].pitch, prev_pitch) > X015_Q15)
-				   &&
-				   ((ratio(par[1].pitch, prev_pitch) < X015_Q15)
-				    || (ratio(par[2].pitch, prev_pitch) <
-					X015_Q15))) {
+				&&
+				((ratio(par[1].pitch, prev_pitch) < X015_Q15)
+					|| (ratio(par[2].pitch, prev_pitch) <
+						X015_Q15))) {
 				index1 =
-				    trackPitch(prev_pitch, &pitTrack[curTrack]);
+					trackPitch(prev_pitch, &pitTrack[curTrack]);
 				pitCand = melpe_shl(pitTrack[curTrack].pit[index1], 7);	// !!! (12/10/99) //
 				index2 =
-				    trackPitch(par[0].pitch,
-					       &pitTrack[curTrack]);
+					trackPitch(par[0].pitch,
+						&pitTrack[curTrack]);
 				w1_w2 =
-				    melpe_sub(pitTrack[curTrack].weight[index1],
-					pitTrack[curTrack].weight[index2]);
+					melpe_sub(pitTrack[curTrack].weight[index1],
+						pitTrack[curTrack].weight[index2]);
 
 				if (multiCheck(par[0].pitch, pitCand) <
-				    X008_Q15) {
+					X008_Q15) {
 					if (((par[0].pitch > pitCand)
-					     && (w1_w2 > MX02_Q15))
-					    || (w1_w2 > X02_Q15))
+						&& (w1_w2 > MX02_Q15))
+						|| (w1_w2 > X02_Q15))
 						par[0].pitch = pitCand;
 				} else if (w1_w2 > MX01_Q15) {
 					par[0].pitch = pitCand;
 				}
 			} else
-			    if ((L_ratio
-				 (par[0].pitch,
-				  (int32_t) (prev_pitch * 2)) < X008_Q15)
-				||
-				(L_ratio
-				 (par[0].pitch,
-				  (int32_t) (prev_pitch * 3)) < X008_Q15)) {
-				// possible it is a double pitch //
-				pitCand = pitLookahead(&pitTrack[curTrack], 4);
-				if (ratio(pitCand, prev_pitch) < X01_Q15)
-					par[0].pitch = pitCand;
-			}
+				if ((L_ratio
+				(par[0].pitch,
+					(int32_t) (prev_pitch * 2)) < X008_Q15)
+					||
+					(L_ratio
+					(par[0].pitch,
+						(int32_t) (prev_pitch * 3)) < X008_Q15)) {
+					// possible it is a double pitch //
+					pitCand = pitLookahead(&pitTrack[curTrack], 4);
+					if (ratio(pitCand, prev_pitch) < X01_Q15)
+						par[0].pitch = pitCand;
+				}
 		}
 	}
 
@@ -701,47 +711,39 @@ void sc_ana(struct melp_param *par)
 					par[1].pitch = pitCand;
 				else {
 					npitch =
-					    pitLookahead(&pitTrack
-							 [curTrack + 1], 3);
+						pitLookahead(&pitTrack
+							[curTrack + 1], 3);
 					if (ratio(npitch, par[2].pitch) <
-					    X015_Q15) {
+						X015_Q15) {
 						if (ratio(pitCand, npitch) <
-						    X015_Q15)
+							X015_Q15)
 							par[1].pitch = pitCand;
 						else if (ratio
-							 (par[1].pitch,
-							  npitch) > X015_Q15)
+						(par[1].pitch,
+							npitch) > X015_Q15)
 							par[1].pitch = npitch;
 					} else if (ratio(pitCand, npitch) <
-						   X015_Q15)
+						X015_Q15)
 						par[1].pitch = pitCand;
 				}
 			}
-		} 
-		
-		
-		
-		else if (!uv[1]) {
-			
-			
-			
+		} else if (!uv[1]) {
 			// not onset not offset, just check pitch smooth //
 			temp1 = melpe_sub(par[1].pitch, prev_pitch);
 			index1 = melpe_shr(temp1, 7);
 			temp2 = melpe_sub(par[2].pitch, par[1].pitch);
 			index2 = melpe_shr(temp2, 7);
 			pitCand = pitLookahead(&pitTrack[curTrack], 3);
-			
+
 			//#########################################################################
-			
-			
+
 			if ((melpe_abs_s(index1) > 5) && (melpe_abs_s(index2) > 5) &&
-			    (index1 * index2 < 0)) {
-				
-						
+				(index1 * index2 < 0)) {
+
+
 				// here is a pitch jump //
 				if ((ratio(prev_pitch, pitCand) < X015_Q15) ||
-				    (ratio(pitCand, par[2].pitch) < X02_Q15))
+					(ratio(pitCand, par[2].pitch) < X02_Q15))
 					par[1].pitch = pitCand;
 				else {
 					//      par[1].pitch = (prev_pitch + par[2].pitch)/2; //
@@ -749,80 +751,68 @@ void sc_ana(struct melp_param *par)
 					temp2 = melpe_shr(par[2].pitch, 1);
 					par[1].pitch = melpe_add(temp1, temp2);	// Q7 //
 				}
-				
-				
-				
-				
-			} 
-			
-       else if ((ratio(par[1].pitch, prev_pitch) > X015_Q15)
-				   &&
-				   ((ratio(par[2].pitch, prev_pitch) < X015_Q15)
-				    || (ratio(pitCand, prev_pitch) <
-					X015_Q15))) {
-						
-						
-						
-				
-						
+			} else if ((ratio(par[1].pitch, prev_pitch) > X015_Q15)
+				&&
+				((ratio(par[2].pitch, prev_pitch) < X015_Q15)
+					|| (ratio(pitCand, prev_pitch) <
+						X015_Q15))) {
+
+
+
+
+
 				if (ratio(pitCand, prev_pitch) < X015_Q15)
 					par[1].pitch = pitCand;
 				else {
 					index1 =
-					    trackPitch(prev_pitch,
-						       &pitTrack[curTrack]);
+						trackPitch(prev_pitch,
+							&pitTrack[curTrack]);
 					pitCand = melpe_shl(pitTrack[curTrack].pit[index1], 7);	// !!! (12/10/99) //
 					index2 =
-					    trackPitch(par[1].pitch,
-						       &pitTrack[curTrack]);
+						trackPitch(par[1].pitch,
+							&pitTrack[curTrack]);
 					w1_w2 =
-					    melpe_sub(pitTrack[curTrack].
-						weight[index1],
-						pitTrack[curTrack].
-						weight[index2]);
+						melpe_sub(pitTrack[curTrack].
+							weight[index1],
+							pitTrack[curTrack].
+							weight[index2]);
 
 					if (multiCheck(par[1].pitch, pitCand) <
-					    X008_Q15) {
+						X008_Q15) {
 						if (((par[1].pitch > pitCand)
-						     && (w1_w2 > MX02_Q15))
-						    || (w1_w2 > X02_Q15))
+							&& (w1_w2 > MX02_Q15))
+							|| (w1_w2 > X02_Q15))
 							par[1].pitch = pitCand;
 					} else if (w1_w2 > MX01_Q15)
 						par[1].pitch = pitCand;
-				}	
-				
-			} 
-					
-			
+				}
+
+			}
+
+
 			else
-      {			 			
-			if ((L_ratio
-				 (par[1].pitch,
-				  (int32_t) (prev_pitch * 2)) < X008_Q15)
-				||
-				(L_ratio
-				 (par[1].pitch,
-				  (int32_t) (prev_pitch * 3)) < X008_Q15)) {
-				
-				// possible it is a double pitch //
-				pitCand = pitLookahead(&pitTrack[curTrack], 4);
-				if (ratio(pitCand, prev_pitch) < X01_Q15)
-					par[1].pitch = pitCand;
-				
-			}					
-			
-		}
-			
-				//#############################################	
+			{
+				if ((L_ratio
+				(par[1].pitch,
+					(int32_t) (prev_pitch * 2)) < X008_Q15)
+					||
+					(L_ratio
+					(par[1].pitch,
+						(int32_t) (prev_pitch * 3)) < X008_Q15)) {
+
+					// possible it is a double pitch //
+					pitCand = pitLookahead(&pitTrack[curTrack], 4);
+					if (ratio(pitCand, prev_pitch) < X01_Q15)
+						par[1].pitch = pitCand;
+
+				}
+
+			}
+
+			//#############################################	
 		}
 	}
 
-	
-	
-	
-	
-	
-	
 	//*************************************************************************************
 	// ======== The third frame ======== //
 	prev_pitch = melpe_shl(melpe_shr(par[1].pitch, 7), 7);
@@ -833,19 +823,19 @@ void sc_ana(struct melp_param *par)
 		voicedCnt = 0;
 
 	if (!uv[3] && (classStat[curTrack + 1].classy == VOICED) &&
-	    (classStat[curTrack + 2].classy == VOICED) &&
-	    !subenergyRelation1(classStat, curTrack)) {
+		(classStat[curTrack + 2].classy == VOICED) &&
+		!subenergyRelation1(classStat, curTrack)) {
 		if ((voicedCnt < 2) || subenergyRelation2(classStat, curTrack)) {
 
 			// Got onset position, should look forward for pitch //
 			pitCand = pitLookahead(&pitTrack[curTrack], 2);
 			if (ratio(par[2].pitch, pitCand) > X015_Q15) {
 				npitch =
-				    pitLookahead(&pitTrack[curTrack + 1], 1);
+					pitLookahead(&pitTrack[curTrack + 1], 1);
 				if (ratio(npitch, pitCand) < X015_Q15)
 					par[2].pitch = pitCand;
 				else if (ratio(par[2].pitch, npitch) >=
-					 X015_Q15)
+					X015_Q15)
 					par[2].pitch = npitch;
 			}
 		} else if (!uv[2]) {
@@ -856,34 +846,34 @@ void sc_ana(struct melp_param *par)
 			temp2 = melpe_sub(pitCand, par[2].pitch);
 			index2 = melpe_shr(temp2, 7);
 			if ((melpe_abs_s(index1) > 5) && (melpe_abs_s(index2) > 5) &&
-			    (index1 * index2 < 0)) {
+				(index1 * index2 < 0)) {
 				// here is a pitch jump //
 				if (ratio(prev_pitch, pitCand) < X015_Q15)
 					par[2].pitch = pitCand;
 				else {
 					index1 =
-					    trackPitch(pitCand,
-						       &pitTrack[curTrack]);
+						trackPitch(pitCand,
+							&pitTrack[curTrack]);
 					index2 =
-					    trackPitch(par[2].pitch,
-						       &pitTrack[curTrack]);
+						trackPitch(par[2].pitch,
+							&pitTrack[curTrack]);
 					w1_w2 =
-					    melpe_sub(pitTrack[curTrack].
-						weight[index1],
-						pitTrack[curTrack].
-						weight[index2]);
+						melpe_sub(pitTrack[curTrack].
+							weight[index1],
+							pitTrack[curTrack].
+							weight[index2]);
 
 					if (multiCheck(par[2].pitch, pitCand) <
-					    X008_Q15) {
+						X008_Q15) {
 						if (((par[2].pitch > pitCand)
-						     && (w1_w2 > MX02_Q15))
-						    || (w1_w2 > X02_Q15))
+							&& (w1_w2 > MX02_Q15))
+							|| (w1_w2 > X02_Q15))
 							par[2].pitch = pitCand;
 					} else {
 						index1 =
-						    trackPitch(prev_pitch,
-							       &pitTrack
-							       [curTrack]);
+							trackPitch(prev_pitch,
+								&pitTrack
+								[curTrack]);
 						pitCand = melpe_shl(pitTrack[curTrack].pit[index1], 7);	// !!! (12/10/99) //
 
 						// Note that w1 = pitTrack[curTrack].weight[index1]   //
@@ -891,25 +881,25 @@ void sc_ana(struct melp_param *par)
 						// condition.                                         //
 
 						w1_w2 =
-						    melpe_sub(pitTrack[curTrack].
-							weight[index1],
-							pitTrack[curTrack].
-							weight[index2]);
+							melpe_sub(pitTrack[curTrack].
+								weight[index1],
+								pitTrack[curTrack].
+								weight[index2]);
 						if (multiCheck
-						    (par[2].pitch,
-						     pitCand) < X008_Q15) {
+						(par[2].pitch,
+							pitCand) < X008_Q15) {
 							if (((par[2].pitch >
-							      pitCand)
-							     && (w1_w2 >
-								 MX02_Q15))
-							    || (w1_w2 >
-								X02_Q15))
+								pitCand)
+								&& (w1_w2 >
+									MX02_Q15))
+								|| (w1_w2 >
+									X02_Q15))
 								par[2].pitch =
-								    pitCand;
+								pitCand;
 						} else {
 							//      par[2].pitch = (prev_pitch + pitCand)/2; //
 							temp1 =
-							    melpe_shr(prev_pitch, 1);
+								melpe_shr(prev_pitch, 1);
 							temp2 = melpe_shr(pitCand, 1);
 							par[2].pitch = melpe_add(temp1, temp2);	// Q7 //
 						}
@@ -952,8 +942,8 @@ void sc_ana(struct melp_param *par)
 		curTrack = (int16_t) (CUR_TRACK + (i - 1) * 2);
 		if ((sbp[i - 1] > 12) && (sbp[i + 1] > 12)) {
 			if ((classStat[curTrack].subEnergy > voicedEn - X05_Q11)
-			    || ((par[i - 1].bpvc[2] > X05_Q14)
-				&& (par[i - 1].bpvc[3] > X05_Q14))) {
+				|| ((par[i - 1].bpvc[2] > X05_Q14)
+					&& (par[i - 1].bpvc[3] > X05_Q14))) {
 				if (sbp[i] < 12)
 					sbp[i] = 12;
 			} else {
@@ -962,14 +952,14 @@ void sc_ana(struct melp_param *par)
 			}
 		} else if ((sbp[i - 1] > 8) && (sbp[i + 1] > 8)) {
 			if ((classStat[curTrack].subEnergy > voicedEn - ONE_Q11)
-			    || ((par[i - 1].bpvc[2] > X04_Q14)
-				&& (par[i - 1].bpvc[3] > X04_Q14))) {
+				|| ((par[i - 1].bpvc[2] > X04_Q14)
+					&& (par[i - 1].bpvc[3] > X04_Q14))) {
 				if (sbp[i] < 8)
 					sbp[i] = 8;
 			}
 		} else if ((sbp[i - 1] < 8) && (sbp[i + 1] < 8)) {
 			if ((classStat[curTrack].subEnergy < voicedEn - X05_Q11)
-			    && (par[i - 1].bpvc[3] < X07_Q14)) {
+				&& (par[i - 1].bpvc[3] < X07_Q14)) {
 				if (sbp[i] > 12)
 					sbp[i] = 12;
 			}
@@ -978,13 +968,13 @@ void sc_ana(struct melp_param *par)
 
 	curTrack = CUR_TRACK + 4;
 	if ((classStat[curTrack].subEnergy > voicedEn - X03_Q11) &&
-	    (sbp[2] > 12) && (par[1].bpvc[2] > X05_Q14) &&
-	    (par[1].bpvc[3] > X05_Q14)) {
+		(sbp[2] > 12) && (par[1].bpvc[2] > X05_Q14) &&
+		(par[1].bpvc[3] > X05_Q14)) {
 		if (sbp[3] < 12)
 			sbp[3] = 12;
 	} else if ((classStat[curTrack].subEnergy > voicedEn - X05_Q11) &&
-		   (sbp[2] > 8) && (par[1].bpvc[2] > X045_Q14) &&
-		   (par[1].bpvc[3] > X045_Q14)) {
+		(sbp[2] > 8) && (par[1].bpvc[2] > X045_Q14) &&
+		(par[1].bpvc[3] > X045_Q14)) {
 		if (sbp[3] < 8)
 			sbp[3] = 8;
 	}
@@ -1014,7 +1004,7 @@ void sc_ana(struct melp_param *par)
 			//   (1.0 - EN_UP_RATE) * 
 			//   pow(10.0, classStat[curTrack].subEnergy)); //
 			voicedEn = updateEn(voicedEn, EN_UP_RATE_Q15,
-					    classStat[curTrack].subEnergy);
+				classStat[curTrack].subEnergy);
 		}
 		if (voicedEn < classStat[curTrack].subEnergy)
 			voicedEn = classStat[curTrack].subEnergy;
@@ -1047,15 +1037,15 @@ static BOOLEAN subenergyRelation1(classParam classStat[], int16_t curTrack)
 	futureg = classStat[curTrack + 2].subEnergy;
 
 	result = (BOOLEAN)
-	    (((lastg - prevg < X05_Q11) && (orig - lastg < X05_Q11) &&
-	      (nextg - orig < X05_Q11) &&
-	      ((prevg - lastg > X12_Q11) || (lastg - orig > X12_Q11) ||
-	       (orig - nextg > X12_Q11))) ||
-	     ((orig - lastg < X03_Q11) && (nextg - orig < X03_Q11) &&
-	      (((lastg - prevg < X03_Q11) &&
-		((prevg - orig > X08_Q11) || (lastg - nextg > X08_Q11))) ||
-	       ((futureg - nextg < X03_Q11) &&
-		((lastg - nextg > X08_Q11) || (orig - futureg > X08_Q11))))));
+		(((lastg - prevg < X05_Q11) && (orig - lastg < X05_Q11) &&
+		(nextg - orig < X05_Q11) &&
+			((prevg - lastg > X12_Q11) || (lastg - orig > X12_Q11) ||
+			(orig - nextg > X12_Q11))) ||
+				((orig - lastg < X03_Q11) && (nextg - orig < X03_Q11) &&
+			(((lastg - prevg < X03_Q11) &&
+					((prevg - orig > X08_Q11) || (lastg - nextg > X08_Q11))) ||
+				((futureg - nextg < X03_Q11) &&
+				((lastg - nextg > X08_Q11) || (orig - futureg > X08_Q11))))));
 
 	return (result);
 }
@@ -1072,15 +1062,15 @@ static BOOLEAN subenergyRelation2(classParam classStat[], int16_t curTrack)
 	futureg = classStat[curTrack + 2].subEnergy;
 
 	result = (BOOLEAN)
-	    (((lastg - orig < X03_Q11) && (orig - nextg < X03_Q11) &&
-	      (((prevg - lastg < X03_Q11) &&
-		((orig - prevg > X08_Q11) || (nextg - lastg > X08_Q11))) ||
-	       ((nextg - futureg < X03_Q11) &&
-		((nextg - lastg > X08_Q11) || (futureg - orig > X08_Q11))))) ||
-	     ((prevg - lastg < X05_Q11) && (lastg - orig < X05_Q11) &&
-	      (orig - nextg < X05_Q11) &&
-	      ((lastg - prevg > X12_Q11) || (orig - lastg > X12_Q11) ||
-	       (nextg - orig > X12_Q11))));
+		(((lastg - orig < X03_Q11) && (orig - nextg < X03_Q11) &&
+		(((prevg - lastg < X03_Q11) &&
+			((orig - prevg > X08_Q11) || (nextg - lastg > X08_Q11))) ||
+			((nextg - futureg < X03_Q11) &&
+			((nextg - lastg > X08_Q11) || (futureg - orig > X08_Q11))))) ||
+				((prevg - lastg < X05_Q11) && (lastg - orig < X05_Q11) &&
+			(orig - nextg < X05_Q11) &&
+					((lastg - prevg > X12_Q11) || (orig - lastg > X12_Q11) ||
+					(nextg - orig > X12_Q11))));
 
 	return (result);
 }

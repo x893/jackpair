@@ -36,6 +36,8 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _LPC_LIB_H_
 #define _LPC_LIB_H_
 
+#include <stdint.h>
+
 /* better names */
 #define lpc_autocorr			   lpc_acor
 #define lpc_bw_expand			   lpc_bwex

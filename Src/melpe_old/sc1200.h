@@ -67,7 +67,7 @@
 #define FFTLENGTH			512
 #define LOOKAHEAD			(FRAME + 110)
 
-/* -------- Pitch analysis -------- */
+ /* -------- Pitch analysis -------- */
 
 #define PITCHMIN			20	/* minimum pitch lag */
 #define PITCHMAX			160	/* maximum pitch lag */
@@ -106,46 +106,48 @@
 #define LPC_ORD				10	/* LPC order */
 #define NUM_HARM			10	/* number of Fourier magnitudes */
 #define NUM_GAINFR			2	/* number of gains per frame */
-#define PITCHMAX_X2			(PITCHMAX*2)	/* maximum pitch lag times 2 */
+#define PITCHMAX_X2			(PITCHMAX * 2)	/* maximum pitch lag times 2 */
 #define LPF_ORD				6	/* lowpass filter order */
+
 #if NEW_DC_FILTER
-#define	DC_ORD			6
+	#define	DC_ORD			6
 #else
-#define DC_ORD			4	/* DC removal filter order */
+	#define DC_ORD			4	/* DC removal filter order */
 #endif
+
 #define BPF_ORD				6	/* bandpass analysis filter order */
 #define ENV_ORD				2	/* bandpass envelope filter order */
 #define MIX_ORD				32	/* mixed excitation filtering order */
 #define DISP_ORD			64	/* pulse dispersion filter order */
 #define DEFAULT_PITCH_Q7	6400	/* default pitch value */
-						  /* DEFAULT_PITCH * (1 << 7) */
-#define UV_PITCH			50	/* unvoiced pitch value */
+									/* DEFAULT_PITCH * (1 << 7) */
+#define UV_PITCH			50		/* unvoiced pitch value */
 #define UV_PITCH_Q7			6400	/* UV_PITCH * (1 << 7) */
 #define VMIN_Q14			13107	/* 0.8 * (1 << 14)  minimum strongly */
-							/* voiced correlation */
+									/* voiced correlation */
 #define VJIT_Q14			8192	/* 0.5 * (1 << 14) jitter threshold */
-							  /* for correlations */
+									/* for correlations */
 #define BPTHRESH_Q14		9830	/* 0.6 * (1 << 14) bandpass voicing */
-								 /* threshold */
+									 /* threshold */
 #define MAX_JITTER_Q15		8192	/* 0.25 * (1 << 15) maximum jitter */
-							   /* (as a fraction) */
+									/* (as a fraction) */
 #define ASE_NUM_BW_Q15		16384	/* 0.5 * (1 << 15) adaptive */
-						/* spectral enhancement-numer */
+									/* spectral enhancement-numer */
 #define ASE_DEN_BW_Q15		26214	/* 0.8 * (1 << 15) adaptive spectral */
-							 /* enhancement-denom */
+									/* enhancement-denom */
 #define GAINFR				(FRAME/NUM_GAINFR)	/* size of gain frame */
-#define MIN_GAINFR			120	/* minimum gain analysis window */
+#define MIN_GAINFR			120		/* minimum gain analysis window */
 #define GAIN_PITCH_Q7		15257	/* (1.33*GAINFR - 0.5) * (1 <<7 ) pitch */
-							/* input for gain_ana */
-#define MSVQ_M				8	/* M-best for MSVQ search */
-#define MSVQ_MAXCNT			256	/* maximum inner loop counter for MSVQ search */
+									/* input for gain_ana */
+#define MSVQ_M				8		/* M-best for MSVQ search */
+#define MSVQ_MAXCNT			256		/* maximum inner loop counter for MSVQ search */
 
 /* Correct value should be 409 but 0 was used during listening test. */
 /* Set to 0 for bit exact results for the test materials */
 
 #if (0)
 #define BWMIN_Q15			0	/* (50*2/FSAMP) * (1 << 15) minimum */
-							    /* LSF separation */
+								/* LSF separation */
 #else
 #define BWMIN_Q15			409
 #endif
@@ -157,44 +159,44 @@
 /* ======================================= */
 
 #define UPCONST_Q19		17691	/* 0.0337435 * (1 << 19) noise estimation */
-							     /* up time const */
+								/* up time const */
 #define DOWNCONST_Q17	-17749	/* -0.135418 * (1 << 17) noise estimation */
-							     /* dn time const */
-#define NFACT_Q8		768	/* 3.0 * (1 << 8) noise floor boost in dB */
+								/* dn time const */
+#define NFACT_Q8		768		/* 3.0 * (1 << 8) noise floor boost in dB */
 #define MAX_NS_ATT_Q8	1536	/* 6.0 * (1 << 8) maximum noise suppression */
 #define MAX_NS_SUP_Q8	5120	/* 20.0 * (1 << 8) max noise level to use */
-							    /* in suppression */
+								/* in suppression */
 #define MIN_NOISE_Q8	2560	/* 10.0 * (1 << 8) min value allowed */
-						       /* in noise estimation */
+								/* in noise estimation */
 #define MAX_NOISE_Q8	20480	/* 80.0 * (1 << 8) max value allowed */
-						       /* in noise estimation */
+								/* in noise estimation */
 
 /* ===================== */
 /* Channel I/O constants */
 /* ===================== */
 
-#define CHWORDSIZE		8	/* number of bits per channel word */
+#define CHWORDSIZE		8		/* number of bits per channel word */
 #define ERASE_MASK		(uint16_t) 0x4000	/* erasure flag mask */
-							  /* for channel word */
+											/* for channel word */
 #define GN_QLO_Q8		2560	/* 10.0 * (1 << 8) minimum gain in dB */
 #define GN_QUP_Q8		19712	/* 77.0 * (1 << 8) maximum gain in dB */
 #define GN_QLEV			32
 #define GN_QLEV_M1		(32 - 1)	/* no. of 2nd gain quantization levels */
-#define GN_QLEV_M1_Q10	31744	/* GN_QLEV_M1 * (1 << 10) GN_QLEV_M1 in Q10 */
+#define GN_QLEV_M1_Q10	31744		/* GN_QLEV_M1 * (1 << 10) GN_QLEV_M1 in Q10 */
 #define PIT_BITS		7	/* number of bits for pitch coding */
 #define PIT_QLEV		99	/* number of pitch levels minus 1 */
 #define PIT_QLEV_M1		(99 - 1)	/* number of pitch levels minus 1 */
 #define PIT_QLEV_M1_Q8	25088	/* (PIT_QLEV_M1*(1<<8))  number of */
-						      /* pitch levels minus 1 */
+								/* pitch levels minus 1 */
 #define PIT_QLO_Q12		5329	/* 1.30103 * (1 << 12) minimum log */
-						    /* pitch for quantization */
+							/* pitch for quantization */
 #define PIT_QUP_Q12		9028	/* 2.20412 * (1 << 12) maximum log */
-						    /* pitch for quantization */
+							/* pitch for quantization */
 #define FS_BITS			8	/* number of bits for Fourier magnitudes */
 #define FS_LEVELS		(1 << FS_BITS)	/* number of levels for */
 							/* Fourier magnitudes */
 #define CHSIZE			27	/* The shortest integer number of */
-					     /* words in channel packet; NF*9 */
+							/* words in channel packet; NF*9 */
 #define NUM_CH_BITS		81	/* the size is determined for 1.2kbps */
 
 /* ===================== */
@@ -257,27 +259,18 @@ struct quant_param {
 };
 
 void analysis(int16_t sp_in[], struct melp_param *par);
-
 void sc_ana(struct melp_param *par);
-
 void synthesis(struct melp_param *par, int16_t sp_out[]);
 
 void melp_ana_init(void);
-
 void melp_syn_init(void);
-
 void melp_chn_write(struct quant_param *qpar, unsigned char chbuf[]);
-
 void low_rate_chn_write(struct quant_param *qpar);
 
-BOOLEAN melp_chn_read(struct quant_param *qpar, struct melp_param *par,
-		      struct melp_param *prev_par, unsigned char chbuf[]);
-
-BOOLEAN low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
-			  struct melp_param *prev_par);
+BOOLEAN melp_chn_read(struct quant_param *qpar, struct melp_param *par, struct melp_param *prev_par, unsigned char chbuf[]);
+BOOLEAN low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,	struct melp_param *prev_par);
 
 void fec_code(struct quant_param *par);
-
 int16_t fec_decode(struct quant_param *par, int16_t erase);
 
 #endif

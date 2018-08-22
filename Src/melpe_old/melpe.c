@@ -41,7 +41,6 @@
 /* ====== External memory ====== */
 
 int16_t mode;
-int16_t chwordsize;
 int16_t bitBufSize, bitBufSize12, bitBufSize24;
 /* ========== Static definations ========== */
 
@@ -62,9 +61,9 @@ void melpe_s(short *sp, unsigned char *buf);
 short melpe_n(short *sp)
 {
 	//noise preprocessor for other codecs (frame=180)
-	return (short) npp(sp, sp);
+	return (short)npp(sp, sp);
 }
- 
+
 //-------------------------1200----------------------------------
 
 //init melpe codec at 1200 bps
@@ -73,9 +72,8 @@ void melpe_i(void)
 	//====== Run MELPE codec ====== 
 	mode = ANA_SYN;
 	rate = RATE1200;
-	frameSize = (int16_t) BLOCK;
+	frameSize = (int16_t)BLOCK;
 
-	chwordsize = 8;
 	//bitNum12 = 81;
 	bitNum12 = 72;
 	bitNum24 = 54;
@@ -92,12 +90,12 @@ short melpe_a(unsigned char *buf, short *sp)
 {
 	unsigned char ret;
 	//analysys
-	ret=npp(sp, sp); //denoise 3 subframes, add VAD flags (0-silency)
-	ret+=npp(&(sp[FRAME]), &(sp[FRAME]));
-	ret+=npp(&(sp[2 * FRAME]), &(sp[2 * FRAME]));
+	ret = npp(sp, sp); //denoise 3 subframes, add VAD flags (0-silency)
+	ret += npp(&(sp[FRAME]), &(sp[FRAME]));
+	ret += npp(&(sp[2 * FRAME]), &(sp[2 * FRAME]));
 	analysis(sp, melp_par); //melpe encode 540 6KHz PCM frames to 72 bits (9 bytes)
 	memcpy(buf, chbuf, 9); //output bits
-	buf[9]=ret; //set VAD flag to byte array
+	buf[9] = ret; //set VAD flag to byte array
 	return ret; //output VAD flag
 }
 

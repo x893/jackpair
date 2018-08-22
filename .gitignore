@@ -1,0 +1,8 @@
+MDK-ARM/melp_f/
+JLinkLog.txt
+JLinkSettings.ini
+EventRecorderStub.scvd
+*.uvguix.*
+*.uvgui.*
+*.uvoptx
+*.uvopt

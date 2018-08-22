@@ -875,34 +875,34 @@ const int16_t low_rate_pitch_dec[PITCH_VQ_SIZE] = {
 static int16_t binprod_int(int16_t x[], const int16_t y[], int16_t n);
 
 static void vgetbits(int16_t dest[], int16_t source, int16_t bit_pos,
-		     int16_t n);
+	int16_t n);
 
 static void vsetbits(int16_t * dest, int16_t bit_pos, int16_t n,
-		     int16_t source[]);
+	int16_t source[]);
 
 static void sbc_enc(int16_t x[], int16_t n, int16_t k,
-		    const int16_t pmat[]);
+	const int16_t pmat[]);
 
 static int16_t sbc_dec(int16_t x[], int16_t n, int16_t k,
-			 const int16_t pmat[], const int16_t syntab[]);
+	const int16_t pmat[], const int16_t syntab[]);
 
 static int16_t sbc_syn(int16_t x[], int16_t n, int16_t k,
-			 const int16_t pmat[]);
+	const int16_t pmat[]);
 
 static void crc4_enc(int16_t bit[], int16_t num_bits);
 
 static int16_t crc4_dec(int16_t bit[], int16_t num_bits);
 
 /*
-    Name: fec_code.c, fec_decode.c
-    Description: Encode/decode FEC (Hamming codes) on selected MELP parameters
-    Inputs:
-      MELP parameter structure
-    Outputs:
-      updated MELP parameter structure
-    Returns: void
+	Name: fec_code.c, fec_decode.c
+	Description: Encode/decode FEC (Hamming codes) on selected MELP parameters
+	Inputs:
+	  MELP parameter structure
+	Outputs:
+	  updated MELP parameter structure
+	Returns: void
 
-    Copyright (c) 1995 by Texas Instruments, Inc.  All rights reserved.
+	Copyright (c) 1995 by Texas Instruments, Inc.  All rights reserved.
 */
 
 void fec_code(struct quant_param *qpar)
@@ -1001,7 +1001,7 @@ int16_t fec_decode(struct quant_param *qpar, int16_t erase)
 	/* invalid pitch index INVAL_PIND.  Otherwise, convert pitch index into   */
 	/* quantization level.                                                    */
 
-	qpar->uv_flag[0] = (BOOLEAN) (qpar->pitch_index == UV_PIND);
+	qpar->uv_flag[0] = (BOOLEAN)(qpar->pitch_index == UV_PIND);
 	if (!qpar->uv_flag[0]) {
 		erase |= (qpar->pitch_index == INVAL_PIND);
 		if (!erase)
@@ -1060,7 +1060,7 @@ int16_t fec_decode(struct quant_param *qpar, int16_t erase)
 }
 
 int16_t low_rate_fec_decode(struct quant_param * qpar, int16_t erase,
-			      int16_t lsp_check[])
+	int16_t lsp_check[])
 {
 	int16_t berr_pos;
 
@@ -1128,22 +1128,22 @@ static int16_t binprod_int(int16_t x[], const int16_t y[], int16_t n)
 /* integer.                                                                   */
 
 static void vgetbits(int16_t dest[], int16_t source, int16_t bit_pos,
-		     int16_t n)
+	int16_t n)
 {
 	register int16_t i;
 	const int16_t lsb_mask = 0x1;	/* least significant bit mask */
 
 	if ((n >= 0) && (bit_pos >= melpe_sub(n, 1))) {
-		source = melpe_shr(source, (int16_t) (bit_pos - n + 1));
+		source = melpe_shr(source, (int16_t)(bit_pos - n + 1));
 		for (i = melpe_sub(n, 1); i >= 0; i--) {
-			dest[i] = (int16_t) (source & lsb_mask);
+			dest[i] = (int16_t)(source & lsb_mask);
 			source = melpe_shr(source, 1);
 		}
 	}
 }
 
 static void vsetbits(int16_t * dest, int16_t bit_pos, int16_t n,
-		     int16_t source[])
+	int16_t source[])
 {
 	register int16_t i, j;
 	const int16_t lsb_mask = 0x1;
@@ -1177,7 +1177,7 @@ static void vsetbits(int16_t * dest, int16_t bit_pos, int16_t n,
 /*   index used to look up a bit error position in the syndrome table.        */
 
 static void sbc_enc(int16_t x[], int16_t n, int16_t k,
-		    const int16_t pmat[])
+	const int16_t pmat[])
 {
 	register int16_t i;
 
@@ -1186,7 +1186,7 @@ static void sbc_enc(int16_t x[], int16_t n, int16_t k,
 }
 
 static int16_t sbc_dec(int16_t x[], int16_t n, int16_t k,
-			 const int16_t pmat[], const int16_t syntab[])
+	const int16_t pmat[], const int16_t syntab[])
 {
 	int16_t bep;
 
@@ -1197,15 +1197,15 @@ static int16_t sbc_dec(int16_t x[], int16_t n, int16_t k,
 }
 
 static int16_t sbc_syn(int16_t x[], int16_t n, int16_t k,
-			 const int16_t pmat[])
+	const int16_t pmat[])
 {
 	register int16_t i, j;
 	int16_t retval = 0;
 
-	for (i = k, j = (int16_t) (n - k - 1); i < n; i++, j--, pmat += k)
+	for (i = k, j = (int16_t)(n - k - 1); i < n; i++, j--, pmat += k)
 		retval = melpe_add(retval,
-			     (int16_t) ((x[i] ^ binprod_int(x, pmat, k)) <<
-					  j));
+		(int16_t)((x[i] ^ binprod_int(x, pmat, k)) <<
+			j));
 	return (retval);
 }
 
@@ -1218,11 +1218,11 @@ static void crc4_enc(int16_t bit[], int16_t num_bits)
 	v_zap(delay, 4);
 
 	for (i = 1; i <= num_bits; i++) {
-		x = (int16_t) (delay[3] ^ bit[ll - i]);
+		x = (int16_t)(delay[3] ^ bit[ll - i]);
 
 		delay[3] = delay[2];
 		delay[2] = delay[1];
-		delay[1] = (int16_t) (x ^ delay[0]);
+		delay[1] = (int16_t)(x ^ delay[0]);
 		delay[0] = x;
 	}
 
@@ -1241,8 +1241,8 @@ static int16_t crc4_dec(int16_t bit[], int16_t num_bits)
 		x = delay[3];
 		delay[3] = delay[2];
 		delay[2] = delay[1];
-		delay[1] = (int16_t) (x ^ delay[0]);
-		delay[0] = (int16_t) (x ^ bit[num_bits - i]);
+		delay[1] = (int16_t)(x ^ delay[0]);
+		delay[0] = (int16_t)(x ^ bit[num_bits - i]);
 	}
 
 	x = 0x0;

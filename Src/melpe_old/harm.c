@@ -42,7 +42,7 @@
 #define X105_Q14		17203	/* 1.05 * (1 << 15) */
 
 static void realIDFT(int16_t mag[], int16_t phase[],
-		     int16_t signal[], int16_t length);
+	int16_t signal[], int16_t length);
 
 /***************************************************************************
 **
@@ -61,7 +61,7 @@ static void realIDFT(int16_t mag[], int16_t phase[],
 **
 *****************************************************************************/
 static void realIDFT(int16_t mag[], int16_t phase[], int16_t signal[],
-		     int16_t length)
+	int16_t length)
 {
 	register int16_t i, j, k;
 	int16_t w, w2, length2;
@@ -190,7 +190,7 @@ void set_fc(int16_t bpvc[], int16_t * fc)
 **
 *****************************************************************************/
 void harm_syn_pitch(int16_t amp[], int16_t signal[], int16_t fc,
-		    int16_t length)
+	int16_t length)
 {
 	register int16_t i;
 	int16_t rndphase[SYN_FFT_SIZE / 2 + 1];	/* Q0 */

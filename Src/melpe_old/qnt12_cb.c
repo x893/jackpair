@@ -24,31 +24,32 @@
 /* inv_bp_index_map[] reverses this mapping.  The declared dimension 16 is    */
 /* 2^(NUM_BANDS - 1).                                                         */
 
-const int16_t bp_index_map[16] = {
+int16_t bp_index_map[16] = {
 	0, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 3, 2, 3, 3, 3
 };
 
-const int16_t inv_bp_index_map[4] = {
+int16_t inv_bp_index_map[4] = {
 	0, 8, 12, 15
 };
 
-const int16_t vvv_index_map[4] = {
+int16_t vvv_index_map[4] = {
 	3, 5, 6, 7
 };
-
+#if 0
 const int16_t pitch_uvflag_map[9] = {
-	0,			/* UUU    (1) */
-	1,			/* UUV   (99) */
-	100,			/* UVU   (99) */
-	199,			/* UVV  (512) */
-	711,			/* VUU   (99) */
-	810,			/* VUV  (512) */
-	1322,			/* VVU  (512) */
-	1834,			/* VVV (2048) */
-	3882			/* end of CB  */
+	0,		/* UUU    (1) */
+	1,		/* UUV   (99) */
+	100,	/* UVU   (99) */
+	199,	/* UVV  (512) */
+	711,	/* VUU   (99) */
+	810,	/* VUV  (512) */
+	1322,	/* VVU  (512) */
+	1834,	/* VVV (2048) */
+	3882	/* end of CB  */
 };
+#endif
 
-const int16_t pitch_vq_cb_vvv[PITCH_VQ_LEVEL_VVV * NF] = {	/* Q12 */
+int16_t pitch_vq_cb_vvv[PITCH_VQ_LEVEL_VVV * NF] = {	/* Q12 */
 	5764, 5782, 6975, 6370, 5389,
 	7926, 6939, 7332, 8027, 8468,
 	8136, 7304, 5473, 5487, 5569,
@@ -1280,7 +1281,7 @@ const int16_t pitch_vq_cb_vvv[PITCH_VQ_LEVEL_VVV * NF] = {	/* Q12 */
 	7725, 7733, 8639, 8746
 };
 
-const int16_t pitch_vq_cb_uvv[PITCH_VQ_LEVEL_UVV * NF] = {
+int16_t pitch_vq_cb_uvv[PITCH_VQ_LEVEL_UVV * NF] = {
 	5975, 6068, 6231, 6833, 5926,
 	7786, 6556, 7235, 7330, 8365,
 	7546, 8739, 5680, 5672, 5679,
@@ -1591,10 +1592,8 @@ const int16_t pitch_vq_cb_uvv[PITCH_VQ_LEVEL_UVV * NF] = {
 	7612
 };
 
-const int16_t *pitch_vq_cb_vuv = pitch_vq_cb_uvv;
-const int16_t *pitch_vq_cb_vvu = pitch_vq_cb_uvv;
 
-const int16_t gain_vq_cb[GAIN_VQ_SIZE * NF * NUM_GAINFR] = {	/* Q8 */
+int16_t gain_vq_cb[GAIN_VQ_SIZE * NF * NUM_GAINFR] = {	/* Q8 */
 	12002, 8416, 4630, 3423, 3122,
 	12695, 2689, 2648, 2623, 2664,
 	2842, 5668, 6871, 6552, 7382,
@@ -2826,7 +2825,7 @@ const int16_t gain_vq_cb[GAIN_VQ_SIZE * NF * NUM_GAINFR] = {	/* Q8 */
 	13603, 13688, 14097, 14664
 };
 
-const int16_t inpCoef[16][2 * LPC_ORD] = {	/* Q14 */
+int16_t inpCoef[16][2 * LPC_ORD] = {	/* Q14 */
 	{
 	 14503, 16237, 17990, 18726, 18434,
 	 18493, 18534, 17188, 15822, 13680,
@@ -4723,7 +4722,7 @@ const int16_t lsp_uv_9[512 * LPC_ORD] = {	/* Q15 */
 	20523, 22843, 24650, 26752, 27849
 };
 
-const int16_t res256x64x64x64[(256 + 64 + 64 + 64) * 2 * LPC_ORD] = {	/*Q17 */
+int16_t res256x64x64x64[(256 + 64 + 64 + 64) * 2 * LPC_ORD] = {	/*Q17 */
 	4335, 9412, 15037, 15052, 11554,
 	9302, 5161, 2648, 4650, 18,
 	3432, 5024, 13498, 17824, 11180,

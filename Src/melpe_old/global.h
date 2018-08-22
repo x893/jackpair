@@ -55,6 +55,4 @@ extern int16_t w_fs[];
 extern int16_t w_fs_inv[];
 extern BOOLEAN w_fs_init;
 
-// ====== Output bitstream word size ====== */
-extern int16_t chwordsize;
 #endif

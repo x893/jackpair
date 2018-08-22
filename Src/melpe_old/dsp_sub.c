@@ -60,7 +60,7 @@ static uint32_t L_mpyu(uint16_t var1, uint16_t var2);
 /* input signal.  input[], prev_in and output[] are of the same Q value.      */
 
 void envelope(int16_t input[], int16_t prev_in, int16_t output[],
-	      int16_t npts)
+	int16_t npts)
 {
 	register int16_t i;
 	int16_t curr_abs, prev_abs;
@@ -111,7 +111,7 @@ void L_fill(int32_t output[], int32_t fillval, int16_t npts)
 /*      ifact - Q15, prev[], curr[], out[] - the same Q value. */
 
 void interp_array(int16_t prev[], int16_t curr[], int16_t out[],
-		  int16_t ifact, int16_t size)
+	int16_t ifact, int16_t size)
 {
 	register int16_t i;
 	int16_t ifact2;
@@ -141,8 +141,8 @@ int16_t median3(int16_t input[])
 	/* Therefore we can hardwire npts to NF and optimize the procedure and    */
 	/* name the result median3().                                             */
 
-	min = (int16_t) Min(input[0], input[1]);
-	max = (int16_t) Max(input[0], input[1]);
+	min = (int16_t)Min(input[0], input[1]);
+	max = (int16_t)Max(input[0], input[1]);
 	temp = input[2];
 	if (temp < min)
 		return (min);
@@ -158,7 +158,7 @@ int16_t median3(int16_t input[])
 /*    "ptr_ch_bit" points to the position of the next bit being copied onto.  */
 /* ========================================================================== */
 void pack_code(int16_t code, unsigned char **ptr_ch_begin,
-	       int16_t * ptr_ch_bit, int16_t numbits, int16_t wsize)
+	int16_t * ptr_ch_bit, int16_t numbits, int16_t wsize)
 {
 	register int16_t i;
 	unsigned char *ch_word;
@@ -170,7 +170,7 @@ void pack_code(int16_t code, unsigned char **ptr_ch_begin,
 
 	for (i = 0; i < numbits; i++) {	/* Mask in bit from code to channel word */
 		/*      temp = shr(code & (shl(1, i)), i); */
-		temp = (int16_t) (code & 0x0001);
+		temp = (int16_t)(code & 0x0001);
 		if (ch_bit == 0)
 			*ch_word = (unsigned char)temp;
 		else
@@ -257,8 +257,8 @@ int16_t peakiness(int16_t input[], int16_t npts)
 /* uniform quantizer over given positive input range.                         */
 
 void quant_u(int16_t * p_data, int16_t * p_index, int16_t qmin,
-	     int16_t qmax, int16_t nlev, int16_t nlev_q,
-	     int16_t double_flag, int16_t scale)
+	int16_t qmax, int16_t nlev, int16_t nlev_q,
+	int16_t double_flag, int16_t scale)
 {
 	register int16_t i;
 	int16_t step, half_step, qbnd, *p_in;
@@ -316,7 +316,7 @@ void quant_u(int16_t * p_data, int16_t * p_index, int16_t qmin,
 
 /* Subroutine quant_u_dec(): decode uniformly quantized value.                */
 void quant_u_dec(int16_t index, int16_t * p_data, int16_t qmin,
-		 int16_t qmax, int16_t nlev_q, int16_t scale)
+	int16_t qmax, int16_t nlev_q, int16_t scale)
 {
 	int16_t step, temp;
 	int32_t L_qmin, L_temp;
@@ -396,12 +396,12 @@ int16_t rand_minstdgen()
 	/* store bit 15 to bit 31 in p */
 	p = melpe_L_shr(L_temp1, 15);
 	/* mask bit 15 to bit 31 */
-	L_temp1 = melpe_L_shl((L_temp1 & (int32_t) 0x00007fff), 16);
+	L_temp1 = melpe_L_shl((L_temp1 & (int32_t)0x00007fff), 16);
 	L_temp2 = L_mpyu(A, x0);
 	L_temp3 = melpe_L_sub(LW_MAX, L_temp1);
 	if (L_temp2 > L_temp3) {
 		/* subtract 0x80000000 from sum */
-		L_temp1 = melpe_L_sub(L_temp1, (int32_t) 0x7fffffff);
+		L_temp1 = melpe_L_sub(L_temp1, (int32_t)0x7fffffff);
 		L_temp1 = melpe_L_sub(L_temp1, 1);
 		q = melpe_L_add(L_temp1, L_temp2);
 		p = melpe_L_add(p, 1);
@@ -418,7 +418,7 @@ int16_t rand_minstdgen()
 	L_temp3 = melpe_L_sub(LW_MAX, p);
 	if (q > L_temp3) {
 		/* subtract 0x7fffffff from sum */
-		L_temp1 = melpe_L_sub(p, (int32_t) 0x7fffffff);
+		L_temp1 = melpe_L_sub(p, (int32_t)0x7fffffff);
 		L_temp1 = melpe_L_add(L_temp1, q);
 	} else
 		L_temp1 = melpe_L_add(p, q);
@@ -472,7 +472,7 @@ static uint32_t L_mpyu(uint16_t var1, uint16_t var2)
 {
 	uint32_t L_product;
 
-	L_product = (uint32_t) var1 *var2;	/* integer multiply */
+	L_product = (uint32_t)var1 *var2;	/* integer multiply */
 	return (L_product);
 }
 
@@ -482,42 +482,67 @@ static uint32_t L_mpyu(uint16_t var1, uint16_t var2)
 /*    is used and they are packed into the array pointed by "ptr_ch_begin".   */
 /*    "ptr_ch_bit" points to the position of the next bit being copied onto.  */
 /* ========================================================================== */
-BOOLEAN unpack_code(unsigned char **ptr_ch_begin, int16_t * ptr_ch_bit,
-		    int16_t * code, int16_t numbits, int16_t wsize,
-		    uint16_t erase_mask)
+void unpack_code(
+	unsigned char **ptr_ch_begin,
+	int16_t * ptr_ch_bit,
+	int16_t * code,
+	int16_t numbits
+)
 {
 	register int16_t i;
-	unsigned char *ch_word;
-	int16_t ret_code;
-	int16_t ch_bit;
-
-	ch_bit = *ptr_ch_bit;
-	ch_word = *ptr_ch_begin;
-	*code = 0;
-	ret_code = (int16_t) (*ch_word & erase_mask);
+	register unsigned char *ch_word = *ptr_ch_begin;
+	register int16_t ch_bit = *ptr_ch_bit;
+	register int16_t i_code = 0;
 
 	for (i = 0; i < numbits; i++) {
 		/* Mask in bit from channel word to code */
-		*code |=
-		    melpe_shl(melpe_shr
-			((int16_t) ((int16_t) * ch_word & melpe_shl(1, ch_bit)),
-			 ch_bit), i);
-
+		i_code |= melpe_shl( melpe_shr( ((int16_t)*ch_word & melpe_shl(1, ch_bit) ), ch_bit), i );
 		/* Check for end of channel word */
 		ch_bit = melpe_add(ch_bit, 1);
-		if (ch_bit >= wsize) {
+		if (ch_bit >= 1) {
 			ch_bit = 0;
 			(*ptr_ch_begin)++;
 			ch_word++;
 		}
 	}
+	*code = i_code;
+	/* Save updated bit counter */
+	*ptr_ch_bit = ch_bit;
+}
 
+BOOLEAN unpack_code_erase(
+	unsigned char **ptr_ch_begin,
+	int16_t * ptr_ch_bit,
+	int16_t * code,
+	int16_t numbits
+)
+{
+	register int16_t i;
+	register unsigned char *ch_word = *ptr_ch_begin;
+	register int16_t ch_bit = *ptr_ch_bit;
+	register int16_t i_code = 0;
+	BOOLEAN ret_code;
+	ret_code = (BOOLEAN)(*ch_word & ERASE_MASK);
+
+	for (i = 0; i < numbits; i++) {
+		/* Mask in bit from channel word to code */
+		*code |= melpe_shl( melpe_shr( ((int16_t)*ch_word & melpe_shl(1, ch_bit)), ch_bit), i);
+
+		/* Check for end of channel word */
+		ch_bit = melpe_add(ch_bit, 1);
+		if (ch_bit >= CHWORDSIZE) {
+			ch_bit = 0;
+			(*ptr_ch_begin)++;
+			ch_word++;
+		}
+	}
+	*code = i_code;
 	/* Save updated bit counter */
 	*ptr_ch_bit = ch_bit;
 
 	/* Catch erasure in new word if read */
 	if (ch_bit != 0)
-		ret_code |= *ch_word & erase_mask;
+		ret_code |= (BOOLEAN)(*ch_word & ERASE_MASK);
 
 	return (ret_code);
 }
@@ -530,7 +555,7 @@ BOOLEAN unpack_code(unsigned char **ptr_ch_begin, int16_t * ptr_ch_bit,
 /* ============================================ */
 
 void window(int16_t input[], const int16_t win_coeff[], int16_t output[],
-	    int16_t npts)
+	int16_t npts)
 {
 	register int16_t i;
 
@@ -547,7 +572,7 @@ void window(int16_t input[], const int16_t win_coeff[], int16_t output[],
 /* ============================================== */
 
 void window_Q(int16_t input[], int16_t win_coeff[], int16_t output[],
-	      int16_t npts, int16_t Qin)
+	int16_t npts, int16_t Qin)
 {
 	register int16_t i;
 	int16_t shift;
@@ -556,7 +581,7 @@ void window_Q(int16_t input[], int16_t win_coeff[], int16_t output[],
 	shift = melpe_sub(15, Qin);
 	for (i = 0; i < npts; i++) {
 		output[i] =
-		    melpe_extract_h(melpe_L_shl(melpe_L_mult(win_coeff[i], input[i]), shift));
+			melpe_extract_h(melpe_L_shl(melpe_L_mult(win_coeff[i], input[i]), shift));
 	}
 }
 
@@ -567,7 +592,7 @@ void window_Q(int16_t input[], int16_t win_coeff[], int16_t output[],
 /*   input[], output[] - Q0, coeff[] - Q12                                    */
 
 void zerflt(int16_t input[], const int16_t coeff[], int16_t output[],
-	    int16_t order, int16_t npts)
+	int16_t order, int16_t npts)
 {
 	register int16_t i, j;
 	int32_t accum;
@@ -589,7 +614,7 @@ void zerflt(int16_t input[], const int16_t coeff[], int16_t output[],
 /* coeff - specified by Q_coeff, output - same as input                       */
 
 void zerflt_Q(int16_t input[], const int16_t coeff[], int16_t output[],
-	      int16_t order, int16_t npts, int16_t Q_coeff)
+	int16_t order, int16_t npts, int16_t Q_coeff)
 {
 	register int16_t i, j;
 	int16_t scale;
@@ -613,8 +638,8 @@ void zerflt_Q(int16_t input[], const int16_t coeff[], int16_t output[],
 /* Input scaled down by a factor of 2 to prevent overflow                     */
 /* ========================================================================== */
 void iir_2nd_d(int16_t input[], const int16_t den[], const int16_t num[],
-	       int16_t output[], int16_t delin[], int16_t delout_hi[],
-	       int16_t delout_lo[], int16_t npts)
+	int16_t output[], int16_t delin[], int16_t delout_hi[],
+	int16_t delout_lo[], int16_t npts)
 {
 	register int16_t i;
 	int16_t temp;
@@ -643,7 +668,7 @@ void iir_2nd_d(int16_t input[], const int16_t den[], const int16_t num[],
 		delout_lo[1] = delout_lo[0];
 		delout_hi[0] = melpe_extract_h(accum);
 		temp = melpe_shr(melpe_extract_l(accum), 2);
-		delout_lo[0] = (int16_t) (temp & (int16_t) 0x3FFF);
+		delout_lo[0] = (int16_t)(temp & (int16_t)0x3FFF);
 
 		/* r_ound off result */
 		accum = melpe_L_shl(accum, 1);
@@ -658,8 +683,8 @@ void iir_2nd_d(int16_t input[], const int16_t den[], const int16_t num[],
 /* Input scaled down by a factor of 2 to prevent overflow                     */
 /* ========================================================================== */
 void iir_2nd_s(int16_t input[], const int16_t den[], const int16_t num[],
-	       int16_t output[], int16_t delin[], int16_t delout[],
-	       int16_t npts)
+	int16_t output[], int16_t delin[], int16_t delout[],
+	int16_t npts)
 {
 	register int16_t i;
 	int32_t accum;

@@ -14,42 +14,37 @@
 //frame overlapped buffer
 typedef union
 {
- short p[2*SAMPLESS_IN_SYMBOL]; //overlapped array between frames
- short b[SAMPLESPERWAVE*WAVESPERBIT]; //overlapped samples buffer
-}
-t_tail;
+	short p[2 * SAMPLESS_IN_SYMBOL]; //overlapped array between frames
+	short b[SAMPLESPERWAVE * WAVESPERBIT]; //overlapped samples buffer
+} t_tail;
 
 //parity bits
 typedef union
 {
- unsigned char p[SAMPLESS_IN_SYMBOL][SUBFRAMES_IN_FRAME]; //array for received bits on every of 24 lags
- unsigned short b[3*WAVESPERBIT][BITSPERSYMBOL]; //shifted parity bits for frame synchronizing $$$$$
-}
-t_parity;
+	unsigned char p[SAMPLESS_IN_SYMBOL][SUBFRAMES_IN_FRAME]; //array for received bits on every of 24 lags
+	unsigned short b[3 * WAVESPERBIT][BITSPERSYMBOL]; //shifted parity bits for frame synchronizing $$$$$
+} t_parity;
 
 //lag weights
 typedef union
 {
- unsigned int p[SAMPLES_IN_FRAME]; //parity errors in last 10 frames for each lag
- unsigned int b[3*WAVESPERBIT][BITSPERSYMBOL*SYMBOLSPERFRAME];      //weights of lags  $$$$$
-}
-t_wfr;
+	unsigned int p[SAMPLES_IN_FRAME]; //parity errors in last 10 frames for each lag
+	unsigned int b[3 * WAVESPERBIT][BITSPERSYMBOL * SYMBOLSPERFRAME];      //weights of lags  $$$$$
+} t_wfr;
 
 //soft bits
 typedef union
 {
- short p[BITS_IN_FRAME]; //demodulated soft bits in frame
- short b[BITSPERSYMBOL*SYMBOLSPERFRAME];      //metrics of bits
-}
-t_fd;
+	short p[BITS_IN_FRAME]; //demodulated soft bits in frame
+	short b[BITSPERSYMBOL*SYMBOLSPERFRAME];      //metrics of bits
+} t_fd;
 
 //----------State (data buffers) common for pulse and bpsk modems-------------
 typedef struct
 {
- t_tail tail; //frame overlapped buffer
- t_parity parity; //parity bits
- t_wfr wfr; //lag weights
- t_fd fd; //soft bits
- unsigned char avad;	
-}
-t_md;
+	t_tail tail; //frame overlapped buffer
+	t_parity parity; //parity bits
+	t_wfr wfr; //lag weights
+	t_fd fd; //soft bits
+	unsigned char avad;
+} t_md;

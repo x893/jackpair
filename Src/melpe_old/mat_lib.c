@@ -184,7 +184,7 @@ int16_t *v_equ(int16_t vec1[], const int16_t vec2[], int16_t n)
  *************************************************************************/
 
 int16_t *v_equ_shr(int16_t vec1[], int16_t vec2[], int16_t scale,
-		     int16_t n)
+	int16_t n)
 {
 	register int16_t i;
 
@@ -291,7 +291,7 @@ int32_t *L_v_equ(int32_t L_vec1[], int32_t L_vec2[], int16_t n)
  *************************************************************************/
 
 int32_t L_v_inner(int16_t vec1[], int16_t vec2[], int16_t n,
-		   int16_t qvec1, int16_t qvec2, int16_t qout)
+	int16_t qvec1, int16_t qvec2, int16_t qout)
 {
 	register int16_t i;
 	int16_t shift;
@@ -350,7 +350,7 @@ int32_t L_v_inner(int16_t vec1[], int16_t vec2[], int16_t n,
  *************************************************************************/
 
 int32_t L_v_magsq(int16_t vec1[], int16_t n, int16_t qvec1,
-		   int16_t qout)
+	int16_t qout)
 {
 	register int16_t i;
 	int16_t shift;
@@ -460,7 +460,7 @@ int16_t *v_scale(int16_t vec1[], int16_t scale, int16_t n)
  *************************************************************************/
 
 int16_t *v_scale_shl(int16_t vec1[], int16_t scale, int16_t n,
-		       int16_t shift)
+	int16_t shift)
 {
 	register int16_t i;
 
@@ -575,6 +575,11 @@ int16_t *v_zap(int16_t vec1[], int16_t n)
 	return (vec1 - n);
 }
 
+#define USE_HEAP_SIZE
+#ifdef USE_HEAP_SIZE
+uint32_t HeapMaxAddr = 0;
+#endif
+
 int16_t *v_get(int16_t n)
 {
 	int16_t *ptr;
@@ -583,6 +588,10 @@ int16_t *v_get(int16_t n)
 	size = sizeof(int16_t) * n;
 	ptr = malloc(size);
 	assert(ptr != NULL);
+#ifdef USE_HEAP_SIZE
+	uint32_t end = ((uint32_t)ptr) + size;
+	if (end > HeapMaxAddr) HeapMaxAddr = end;
+#endif
 	return (ptr);
 }
 
@@ -594,6 +603,10 @@ int32_t *L_v_get(int16_t n)
 	size = sizeof(int32_t) * n;
 	ptr = malloc(size);
 	assert(ptr != NULL);
+#ifdef USE_HEAP_SIZE
+	uint32_t end = ((uint32_t)ptr) + size;
+	if (end > HeapMaxAddr) HeapMaxAddr = end;
+#endif
 	return (ptr);
 }
 

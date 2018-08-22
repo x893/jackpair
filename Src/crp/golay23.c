@@ -6,11 +6,11 @@
 
   To test:
 
-     src$ gcc golay23.c -o golay23 -Wall -DGOLAY23_UNITTEST -DRUN_TIME_TABLES
-     src$ ./golay23
+	 src$ gcc golay23.c -o golay23 -Wall -DGOLAY23_UNITTEST -DRUN_TIME_TABLES
+	 src$ ./golay23
 
   To generate tables:
-     src$ gcc golay23.c -o golay23 -Wall -DGOLAY23_MAKETABLES -DRUN_TIME_TABLES
+	 src$ gcc golay23.c -o golay23 -Wall -DGOLAY23_MAKETABLES -DRUN_TIME_TABLES
 
 \*---------------------------------------------------------------------------*/
 
@@ -71,19 +71,19 @@
 #define MASK12          0xfffff800   /* auxiliary vector for testing */
 #define GENPOL          0x00000c75   /* generator polinomial, g(x) */
 
-/* Global variables:
- *
- * pattern = error pattern, or information, or received vector
- * encoding_table[] = encoding table
- * decoding_table[] = decoding table
- * data = information bits, i(x)
- * codeword = code bits = x^{11}i(x) + (x^{11}i(x) mod g(x))
- * numerr = number of errors = Hamming weight of error polynomial e(x)
- * position[] = error positions in the vector representation of e(x)
- * recd = representation of corrupted received polynomial r(x) = c(x) + e(x)
- * decerror = number of decoding errors
- * a[] = auxiliary array to generate correctable error patterns
- */
+ /* Global variables:
+  *
+  * pattern = error pattern, or information, or received vector
+  * encoding_table[] = encoding table
+  * decoding_table[] = decoding table
+  * data = information bits, i(x)
+  * codeword = code bits = x^{11}i(x) + (x^{11}i(x) mod g(x))
+  * numerr = number of errors = Hamming weight of error polynomial e(x)
+  * position[] = error positions in the vector representation of e(x)
+  * recd = representation of corrupted received polynomial r(x) = c(x) + e(x)
+  * decerror = number of decoding errors
+  * a[] = auxiliary array to generate correctable error patterns
+  */
 
 #include "golayenctable.h"
 #include "golaydectable.h"
@@ -94,17 +94,17 @@ void nextcomb(int n, int r, int a[])
  * Calculate next r-combination of an n-set.
  */
 {
-  int  i, j;
+	int  i, j;
 
-  a[r]++;
-  if (a[r] <= n)
-      return;
-  j = r - 1;
-  while (a[j] == n - r + j)
-     j--;
-  for (i = r; i >= j; i--)
-      a[i] = a[j] + i - j + 1;
-  return;
+	a[r]++;
+	if (a[r] <= n)
+		return;
+	j = r - 1;
+	while (a[j] == n - r + j)
+		j--;
+	for (i = r; i >= j; i--)
+		a[i] = a[j] + i - j + 1;
+	return;
 }
 
 int get_syndrome(int pattern)
@@ -118,15 +118,15 @@ int get_syndrome(int pattern)
  * obtain its syndrome in decoding.
  */
 {
-    int aux = X22;
+	int aux = X22;
 
-    if (pattern >= X11)
-       while (pattern & MASK12) {
-           while (!(aux & pattern))
-              aux = aux >> 1;
-           pattern ^= (aux/X11) * GENPOL;
-           }
-    return(pattern);
+	if (pattern >= X11)
+		while (pattern & MASK12) {
+			while (!(aux & pattern))
+				aux = aux >> 1;
+			pattern ^= (aux / X11) * GENPOL;
+		}
+	return(pattern);
 }
 
 /*---------------------------------------------------------------------------*\
@@ -152,8 +152,8 @@ int get_syndrome(int pattern)
 \*---------------------------------------------------------------------------*/
 
 int golay23_encode(int data) {
-   
-    return encoding_table[data];
+
+	return encoding_table[data];
 }
 
 /*---------------------------------------------------------------------------*\
@@ -167,22 +167,22 @@ int golay23_encode(int data) {
 \*---------------------------------------------------------------------------*/
 
 int golay23_decode(int received_codeword) {
-   
-    return received_codeword ^= decoding_table[get_syndrome(received_codeword)];
+
+	return received_codeword ^= decoding_table[get_syndrome(received_codeword)];
 }
 
 int golay23_count_errors(int recd_codeword, int corrected_codeword)
 {
-    int errors = 0;
-    int diff, i;
+	int errors = 0;
+	int diff, i;
 
-    diff = recd_codeword ^ corrected_codeword;
-    for(i=0; i<23; i++) {
-        if (diff & 0x1)
-            errors++;
-        diff >>= 1;
-    }
+	diff = recd_codeword ^ corrected_codeword;
+	for (i = 0; i < 23; i++) {
+		if (diff & 0x1)
+			errors++;
+		diff >>= 1;
+	}
 
-    return errors;
+	return errors;
 }
 

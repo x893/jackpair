@@ -36,7 +36,8 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _DSP_SUB_H_
 #define _DSP_SUB_H_
 
-#include <stdio.h>
+#include <stdint.h>
+#include "sc1200.h"
 
 void envelope(int16_t input[], int16_t prev_in, int16_t output[],
 	      int16_t npts);
@@ -66,9 +67,10 @@ void rand_num(int16_t output[], int16_t amplitude, int16_t npts);
 
 int16_t rand_minstdgen(void);
 
-BOOLEAN unpack_code(unsigned char **ptr_ch_begin, int16_t * ptr_ch_bit,
-		    int16_t * code, int16_t numbits, int16_t wsize,
-		    uint16_t erase_mask);
+void unpack_code(unsigned char **ptr_ch_begin, int16_t * ptr_ch_bit,
+		    int16_t * code, int16_t numbits);
+BOOLEAN unpack_code_erase(unsigned char **ptr_ch_begin, int16_t * ptr_ch_bit,
+		    int16_t * code, int16_t numbits);
 
 void window(int16_t input[], const int16_t win_coeff[],
 	    int16_t output[], int16_t npts);

@@ -75,7 +75,7 @@ Secretariat fax: +33 493 65 47 16.
 /* Q values: speech - Q0, fpitch - Q7, bpvc - Q14, pitch - Q7                 */
 
 void bpvc_ana(int16_t speech[], int16_t fpitch[], int16_t bpvc[],
-	      int16_t * pitch)
+	int16_t * pitch)
 {
 	register int16_t i, section;
 	static int16_t bpfsp[NUM_BANDS][PITCH_FR - FRAME];
@@ -103,14 +103,14 @@ void bpvc_ana(int16_t speech[], int16_t fpitch[], int16_t bpvc[],
 	/* Filter lowest band and estimate pitch */
 	v_equ(&sigbuf[BPF_ORD], bpfsp[0], PITCH_FR - FRAME);
 	v_equ(&sigbuf[BPF_ORD + PITCH_FR - FRAME],
-	      &speech[PITCH_FR - FRAME - PITCHMAX], FRAME);
+		&speech[PITCH_FR - FRAME - PITCHMAX], FRAME);
 
 	for (section = 0; section < BPF_ORD / 2; section++) {
 		iir_2nd_s(&sigbuf[BPF_ORD + PITCH_FR - FRAME],
-			  &bpf_den[section * 3], &bpf_num[section * 3],
-			  &sigbuf[BPF_ORD + PITCH_FR - FRAME],
-			  &bpfdelin[0][section * 2], &bpfdelout[0][section * 2],
-			  FRAME);
+			&bpf_den[section * 3], &bpf_num[section * 3],
+			&sigbuf[BPF_ORD + PITCH_FR - FRAME],
+			&bpfdelin[0][section * 2], &bpfdelout[0][section * 2],
+			FRAME);
 	}
 	v_equ(bpfsp[0], &sigbuf[BPF_ORD + FRAME], PITCH_FR - FRAME);
 
@@ -118,14 +118,14 @@ void bpvc_ana(int16_t speech[], int16_t fpitch[], int16_t bpvc[],
 	f_pitch_scale(&sigbuf[BPF_ORD], &sigbuf[BPF_ORD], PITCH_FR);
 
 	*pitch = frac_pch(&sigbuf[BPF_ORD + PITCHMAX], bpvc, fpitch[0], 5,
-			  PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
-			  MINLENGTH);
+		PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
+		MINLENGTH);
 
 	for (i = 1; i < NUM_PITCHES; i++) {
 		temp =
-		    frac_pch(&sigbuf[BPF_ORD + PITCHMAX], &pcorr, fpitch[i], 5,
-			     PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
-			     MINLENGTH);
+			frac_pch(&sigbuf[BPF_ORD + PITCHMAX], &pcorr, fpitch[i], 5,
+				PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
+				MINLENGTH);
 
 		/* choose largest correlation value */
 		if (pcorr > bpvc[0]) {
@@ -139,46 +139,46 @@ void bpvc_ana(int16_t speech[], int16_t fpitch[], int16_t bpvc[],
 		/* Bandpass filter input speech */
 		v_equ(&sigbuf[BPF_ORD], bpfsp[i], PITCH_FR - FRAME);
 		v_equ(&sigbuf[BPF_ORD + PITCH_FR - FRAME],
-		      &speech[PITCH_FR - FRAME - PITCHMAX], FRAME);
+			&speech[PITCH_FR - FRAME - PITCHMAX], FRAME);
 
 		for (section = 0; section < BPF_ORD / 2; section++) {
 			filt_index =
-			    (int16_t) (i * (BPF_ORD / 2) * 3 + section * 3);
+				(int16_t)(i * (BPF_ORD / 2) * 3 + section * 3);
 			iir_2nd_s(&sigbuf[BPF_ORD + PITCH_FR - FRAME],
-				  &bpf_den[filt_index], &bpf_num[filt_index],
-				  &sigbuf[BPF_ORD + PITCH_FR - FRAME],
-				  &bpfdelin[i][section * 2],
-				  &bpfdelout[i][section * 2], FRAME);
+				&bpf_den[filt_index], &bpf_num[filt_index],
+				&sigbuf[BPF_ORD + PITCH_FR - FRAME],
+				&bpfdelin[i][section * 2],
+				&bpfdelout[i][section * 2], FRAME);
 		}
 		v_equ(bpfsp[i], &sigbuf[BPF_ORD + FRAME], PITCH_FR - FRAME);
 
 		/* Scale signal for pitch correlations */
 		scale =
-		    f_pitch_scale(&sigbuf[BPF_ORD], &sigbuf[BPF_ORD], PITCH_FR);
+			f_pitch_scale(&sigbuf[BPF_ORD], &sigbuf[BPF_ORD], PITCH_FR);
 
 		/* Check correlations for each frame */
 		frac_pch(&sigbuf[BPF_ORD + PITCHMAX], &bpvc[i], *pitch, 0,
-			 PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
-			 MINLENGTH);
+			PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
+			MINLENGTH);
 
 		/* Calculate envelope of bandpass filtered input speech */
 		/* update delay buffers without scaling */
 		temp = melpe_shr(envdel2[i], scale);
 		envdel2[i] =
-		    melpe_shr(sigbuf[BPF_ORD + FRAME - 1], (int16_t) (-scale));
+			melpe_shr(sigbuf[BPF_ORD + FRAME - 1], (int16_t)(-scale));
 		v_equ_shr(&sigbuf[BPF_ORD - ENV_ORD], envdel[i], scale,
-			  ENV_ORD);
+			ENV_ORD);
 		envelope(&sigbuf[BPF_ORD], temp, &sigbuf[BPF_ORD], PITCH_FR);
 		v_equ_shr(envdel[i], &sigbuf[BPF_ORD + FRAME - ENV_ORD],
-			  (int16_t) (-scale), ENV_ORD);
+			(int16_t)(-scale), ENV_ORD);
 
 		/* Scale signal for pitch correlations */
 		f_pitch_scale(&sigbuf[BPF_ORD], &sigbuf[BPF_ORD], PITCH_FR);
 
 		/* Check correlations for each frame */
 		frac_pch(&sigbuf[BPF_ORD + PITCHMAX], &pcorr, *pitch, 0,
-			 PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
-			 MINLENGTH);
+			PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
+			MINLENGTH);
 
 		/* reduce envelope correlation */
 		pcorr = melpe_sub(pcorr, X01_Q14);
@@ -209,7 +209,7 @@ void bpvc_ana(int16_t speech[], int16_t fpitch[], int16_t bpvc[],
 /* order of sections swapped                                                  */
 
 void dc_rmv(int16_t sigin[], int16_t sigout[], int16_t delin[],
-	    int16_t delout_hi[], int16_t delout_lo[], int16_t frame)
+	int16_t delout_hi[], int16_t delout_lo[], int16_t frame)
 {
 	static const int16_t dc_num[(DC_ORD / 2) * 3] = {	/* Maybe Q13 */
 #if NEW_DC_FILTER
@@ -240,8 +240,8 @@ void dc_rmv(int16_t sigin[], int16_t sigout[], int16_t delin[],
 	v_equ(sigout, sigin, frame);
 	for (section = 0; section < DC_ORD / 2; section++)
 		iir_2nd_d(sigout, &dc_den[section * 3], &dc_num[section * 3],
-			  sigout, &delin[section * 2], &delout_hi[section * 2],
-			  &delout_lo[section * 2], frame);
+			sigout, &delin[section * 2], &delout_hi[section * 2],
+			&delout_lo[section * 2], frame);
 }
 
 /* This function removes the DC component of a given signal sigin[].  It      */
@@ -309,7 +309,7 @@ void remove_dc(int16_t sigin[], int16_t sigout[], int16_t len)
 /*	sigin (speech) - Q0                                                       */
 
 int16_t gain_ana(int16_t sigin[], int16_t pitch, int16_t minlength,
-		   int16_t maxlength)
+	int16_t maxlength)
 {
 	int16_t length;	/* Q0 */
 	int16_t flength;	/* Q6 */
@@ -422,7 +422,7 @@ int16_t gain_ana(int16_t sigin[], int16_t pitch, int16_t minlength,
 /*	y,ymin,ymax - Q15                                                         */
 
 int16_t lin_int_bnd(int16_t x, int16_t xmin, int16_t xmax,
-		      int16_t ymin, int16_t ymax)
+	int16_t ymin, int16_t ymax)
 {
 	int16_t y, temp1, temp2;
 
@@ -463,7 +463,7 @@ int16_t lin_int_bnd(int16_t x, int16_t xmin, int16_t xmax,
 /*	gain - Q8, *noise_gain - Q8, up - Q19, down - Q17, min - Q8, max - Q8     */
 
 void noise_est(int16_t gain, int16_t * noise_gain, int16_t up,
-	       int16_t down, int16_t min, int16_t max)
+	int16_t down, int16_t min, int16_t max)
 {
 	int16_t temp1, temp2;
 	int32_t L_noise_gain, L_temp;
@@ -511,7 +511,7 @@ void noise_est(int16_t gain, int16_t * noise_gain, int16_t up,
 /*	*gain - Q8, noise_gain - Q8, max_noise - Q8, max_atten - Q8, nfact - Q8   */
 
 void noise_sup(int16_t * gain, int16_t noise_gain, int16_t max_noise,
-	       int16_t max_atten, int16_t nfact)
+	int16_t max_atten, int16_t nfact)
 {
 	int16_t gain_lev, suppress, temp;
 	int32_t L_temp;
@@ -593,7 +593,7 @@ BOOLEAN q_bpvc(int16_t bpvc[], int16_t * bpvc_index, int16_t num_bands)
 }
 
 void q_bpvc_dec(int16_t bpvc[], int16_t bpvc_index, BOOLEAN uv_flag,
-		int16_t num_bands)
+	int16_t num_bands)
 {
 	register int16_t i;
 
@@ -609,7 +609,7 @@ void q_bpvc_dec(int16_t bpvc[], int16_t bpvc_index, BOOLEAN uv_flag,
 	}
 
 	/* Decode remaining bands */
-	for (i = (int16_t) (num_bands - 1); i > 0; i--) {
+	for (i = (int16_t)(num_bands - 1); i > 0; i--) {
 		if (bpvc_index & 1)
 			bpvc[i] = ONE_Q14;
 		else
@@ -634,8 +634,8 @@ void q_bpvc_dec(int16_t bpvc[], int16_t bpvc_index, BOOLEAN uv_flag,
 /*	*gain - Q8, gn_qlo - Q8, gn_qup - Q8, gn_qlev - Q10                       */
 
 void q_gain(int16_t * gain, int16_t * gain_index, int16_t gn_qlo,
-	    int16_t gn_qup, int16_t gn_qlev, int16_t gn_qlev_q,
-	    int16_t double_flag, int16_t scale)
+	int16_t gn_qup, int16_t gn_qlev, int16_t gn_qlev_q,
+	int16_t double_flag, int16_t scale)
 {
 	static int16_t prev_gain = 0;
 	int16_t temp, temp2;
@@ -656,7 +656,7 @@ void q_gain(int16_t * gain, int16_t * gain_index, int16_t gn_qlo,
 	   fabs(gain[0] - 0.5*(gain[1]+prev_gain)) < 3.0) */
 	temp = melpe_add(melpe_shr(gain[1], 1), melpe_shr(prev_gain, 1));
 	if (melpe_abs_s(melpe_sub(gain[1], prev_gain)) < GAIN_INT_DB_Q8 &&
-	    melpe_abs_s(melpe_sub(gain[0], temp)) < THREE_Q8) {
+		melpe_abs_s(melpe_sub(gain[0], temp)) < THREE_Q8) {
 
 		/* interpolate and set special code */
 		/* gain[0] = 0.5*(gain[1] + prev_gain); */
@@ -692,7 +692,7 @@ void q_gain(int16_t * gain, int16_t * gain_index, int16_t gn_qlo,
 }
 
 void q_gain_dec(int16_t * gain, int16_t * gain_index, int16_t gn_qlo,
-		int16_t gn_qup, int16_t gn_qlev_q, int16_t scale)
+	int16_t gn_qup, int16_t gn_qlev_q, int16_t scale)
 {
 	static int16_t prev_gain = 0;
 	static BOOLEAN prev_gain_err = FALSE;
@@ -740,7 +740,7 @@ void q_gain_dec(int16_t * gain, int16_t * gain_index, int16_t gn_qlo,
 		/* Now to incorporate the transcoder, we want to avoid changing  */
 		/* gain_index[0] in this function.                               */
 		quant_u_dec(melpe_sub(gain_index[0], 1), &gain[0], temp, temp2,
-			    SIX_Q12, 3);
+			SIX_Q12, 3);
 	}
 
 	/* Update previous gain for next time */
@@ -766,7 +766,7 @@ void q_gain_dec(int16_t * gain, int16_t * gain_index, int16_t gn_qlo,
 /*	gain - Q12                                                                */
 
 void scale_adj(int16_t * speech, int16_t gain, int16_t length,
-	       int16_t scale_over, int16_t inv_scale_over)
+	int16_t scale_over, int16_t inv_scale_over)
 {
 	static int16_t prev_scale;	/* Previous scale factor, Q13 */
 	register int16_t i;
@@ -843,14 +843,14 @@ void scale_adj(int16_t * speech, int16_t gain, int16_t length,
 		L_temp = melpe_L_add(interp1, interp2);
 		interp1 = melpe_extract_h(L_temp);	/* interp1 in Q13 */
 
-		L_temp = melpe_L_mult(speech[i - 1], (int16_t) interp1);
+		L_temp = melpe_L_mult(speech[i - 1], (int16_t)interp1);
 		L_temp = melpe_L_shl(L_temp, 2);
 		speech[i - 1] = melpe_extract_h(L_temp);
 	}
 
 	/* Scale rest of signal */
 	v_scale_shl(&speech[scale_over - 1], scale,
-		    (int16_t) (length - scale_over + 1), 2);
+		(int16_t)(length - scale_over + 1), 2);
 
 	/* Update previous scale factor for next call */
 	prev_scale = scale;

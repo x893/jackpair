@@ -68,7 +68,7 @@ Secretariat fax: +33 493 65 47 16.
 /*      The coder does not use the returned value from vq_lspw() at all.      */
 
 int16_t *vq_lspw(int16_t weight[], int16_t lsp[], int16_t lpc[],
-		   int16_t order)
+	int16_t order)
 {
 	register int16_t i;
 	int32_t L_temp;
@@ -116,9 +116,12 @@ int16_t *vq_lspw(int16_t weight[], int16_t lsp[], int16_t lpc[],
 /*          The coder does not use the returned value from vq_lspw() at all.  */
 
 int16_t vq_ms4(const int16_t * cb, int16_t * u, const int16_t * u_est,
-		 const int16_t levels[], int16_t ma, int16_t stages,
-		 int16_t order, int16_t weights[], int16_t * u_hat,
-		 int16_t * a_indices, int16_t max_inner)
+	const int16_t levels[],
+	int16_t ma,
+	int16_t stages,
+	int16_t order,
+	int16_t weights[], int16_t * u_hat,
+	int16_t * a_indices, int16_t max_inner)
 {
 	const int16_t *cbp, *cb_currentstage, *cb_table;
 	int16_t tmp, *u_tmp, *uhatw, uhatw_sq;
@@ -152,16 +155,16 @@ int16_t vq_ms4(const int16_t * cb, int16_t * u, const int16_t * u_est,
 	/* allocate memory for the current node and parent node (thus, the        */
 	/* factors of two everywhere) The parents and current nodes are allocated */
 	/* contiguously */
-	indices = v_get((int16_t) (2 * ma * stages));
-	errors = v_get((int16_t) (2 * ma * order));
+	indices = v_get((int16_t)(2 * ma * stages));
+	errors = v_get((int16_t)(2 * ma * order));
 	uhatw = v_get(order);
-	d = v_get((int16_t) (2 * ma));
-	parents = v_get((int16_t) (2 * ma));
-	tmp_p_e = v_get((int16_t) (ma * order));
+	d = v_get((int16_t)(2 * ma));
+	parents = v_get((int16_t)(2 * ma));
+	tmp_p_e = v_get((int16_t)(ma * order));
 
 	/* initialize memory */
-	v_zap(indices, (int16_t) (2 * stages * ma));
-	v_zap(parents, (int16_t) (2 * ma));
+	v_zap(indices, (int16_t)(2 * stages * ma));
+	v_zap(parents, (int16_t)(2 * ma));
 
 	/* initialize inner loop counter */
 	inner_counter = 0;
@@ -178,10 +181,10 @@ int16_t vq_ms4(const int16_t * cb, int16_t * u, const int16_t * u_est,
 
 	/* u_tmp is the input vector (i.e. if u_est is non-null, it is subtracted */
 	/* off) */
-	u_tmp = v_get((int16_t) (order + 1));	/* u_tmp is Q15 */
-	(void)v_equ(u_tmp, u, order);
+	u_tmp = v_get((int16_t)(order + 1));	/* u_tmp is Q15 */
+	v_equ(u_tmp, u, order);
 	if (u_est)
-		(void)v_sub(u_tmp, u_est, order);
+		v_sub(u_tmp, u_est, order);
 
 	/* change u_tmp from Q15 to Q17 */
 	for (j = 0; j < order; j++)
@@ -200,7 +203,7 @@ int16_t vq_ms4(const int16_t * cb, int16_t * u, const int16_t * u_est,
 	/* set up inital error vectors (i.e. error vectors = u_tmp) */
 	for (c = 0; c < ma; c++) {
 		/* n_errors is Q17, n_d is Q15 */
-		(void)v_equ(&n_errors[c * order], u_tmp, order);
+		v_equ(&n_errors[c * order], u_tmp, order);
 		n_d[c] = tmp;
 	}
 
@@ -269,10 +272,10 @@ int16_t vq_ms4(const int16_t * cb, int16_t * u, const int16_t * u_est,
 			for (c = 0; c < m; c++) {
 				/* L_temp is Q31, p_distortion is same Q as n_d, p_e is Q15 */
 				L_temp =
-				    melpe_L_deposit_h(melpe_add(*p_distortion++, uhatw_sq));
+					melpe_L_deposit_h(melpe_add(*p_distortion++, uhatw_sq));
 				for (i = 0; i < order; i++)
 					L_temp =
-					    melpe_L_mac(L_temp, *p_e++, uhatw[i]);
+					melpe_L_mac(L_temp, *p_e++, uhatw[i]);
 
 				/* d_cj is Q15 */
 				d_cj = melpe_extract_h(L_temp);
@@ -286,8 +289,8 @@ int16_t vq_ms4(const int16_t * cb, int16_t * u, const int16_t * u_est,
 					n_d[p_max] = d_cj;
 
 					i = melpe_add(melpe_shr
-						(melpe_extract_l
-						 (melpe_L_mult(p_max, stages)), 1),
+					(melpe_extract_l
+					(melpe_L_mult(p_max, stages)), 1),
 						s);
 					n_indices[i] = j;
 					n_parents[p_max] = c;
@@ -296,30 +299,30 @@ int16_t vq_ms4(const int16_t * cb, int16_t * u, const int16_t * u_est,
 					/* entered (to reduce the *maximum* complexity) */
 					if (inner_counter < max_inner) {
 						inner_counter =
-						    melpe_add(inner_counter, 1);
+							melpe_add(inner_counter, 1);
 						if (inner_counter < max_inner) {
 							p_max = 0;
 							/* find the new maximum */
 							for (i = 1; i < ma; i++) {
 								if (n_d[i] >
-								    n_d[p_max])
+									n_d[p_max])
 									p_max =
-									    i;
+									i;
 							}
 						} else {	/* inner_counter == max_inner */
-							/* The inner loop counter now exceeds the         */
-							/* maximum, and the inner loop will now not be    */
-							/* entered.  Instead of quitting the search or    */
-							/* doing something drastic, we simply keep track  */
-							/* of the best candidate (rather than the M best) */
-							/* by setting p_max to equal the index of the     */
-							/* minimum distortion i.e. only keep one          */
-							/* candidate ar_ound the MINIMUM distortion */
+						 /* The inner loop counter now exceeds the         */
+						 /* maximum, and the inner loop will now not be    */
+						 /* entered.  Instead of quitting the search or    */
+						 /* doing something drastic, we simply keep track  */
+						 /* of the best candidate (rather than the M best) */
+						 /* by setting p_max to equal the index of the     */
+						 /* minimum distortion i.e. only keep one          */
+						 /* candidate ar_ound the MINIMUM distortion */
 							for (i = 1; i < ma; i++) {
 								if (n_d[i] <
-								    n_d[p_max])
+									n_d[p_max])
 									p_max =
-									    i;
+									i;
 							}
 						}
 					}
@@ -331,17 +334,17 @@ int16_t vq_ms4(const int16_t * cb, int16_t * u, const int16_t * u_est,
 		for (c = 0; c < ma; c++) {
 			/* get the error from the parent node and subtract off the        */
 			/* codebook value */
-			(void)v_equ(&n_errors[c * order],
-				    &p_errors[n_parents[c] * order], order);
-			(void)v_sub(&n_errors[c * order],
-				    &cb_currentstage[n_indices[c * stages + s] *
-						     order], order);
+			v_equ(&n_errors[c * order],
+				&p_errors[n_parents[c] * order], order);
+			v_sub(&n_errors[c * order],
+				&cb_currentstage[n_indices[c * stages + s] *
+				order], order);
 			/* get the indices that were used for the parent node */
-			(void)v_equ(&n_indices[c * stages],
-				    &p_indices[n_parents[c] * stages], s);
+			v_equ(&n_indices[c * stages],
+				&p_indices[n_parents[c] * stages], s);
 		}
 
-		m = (int16_t) (m * levels[s]);
+		m = (int16_t)(m * levels[s]);
 		if (m > ma)
 			m = ma;
 	}			/* for s */
@@ -355,18 +358,18 @@ int16_t vq_ms4(const int16_t * cb, int16_t * u, const int16_t * u_est,
 	d_opt = n_d[c];
 
 	if (a_indices) {
-		(void)v_equ(a_indices, &n_indices[c * stages], stages);
+		v_equ(a_indices, &n_indices[c * stages], stages);
 	}
 	if (u_hat) {
 		if (u_est)
-			(void)v_equ(u_hat, u_est, order);
+			v_equ(u_hat, u_est, order);
 		else
-			(void)v_zap(u_hat, order);
+			v_zap(u_hat, order);
 
 		cb_currentstage = cb;
 		for (s = 0; s < stages; s++) {
 			cb_table =
-			    &cb_currentstage[n_indices[c * stages + s] * order];
+				&cb_currentstage[n_indices[c * stages + s] * order];
 			for (i = 0; i < order; i++)
 				u_hat[i] = melpe_add(u_hat[i], melpe_shr(cb_table[i], 2));
 			cb_currentstage += levels[s] * order;
@@ -410,9 +413,16 @@ int16_t vq_ms4(const int16_t * cb, int16_t * u, const int16_t * u_est,
 /*      Note:                                                                 */
 /*          The coder does not use the returned value from vq_lspw() at all.  */
 
-void vq_msd2(const int16_t * cb, int16_t * u_hat, const int16_t * u_est,
-	     int16_t * indices, const int16_t levels[], int16_t stages,
-	     int16_t p, int16_t diff_Q)
+void vq_msd2(
+	const int16_t * cb,
+	int16_t * u_hat,
+	const int16_t * u_est,
+	int16_t * indices,
+	const int16_t levels[],
+	int16_t stages,
+	int16_t p,
+	int16_t diff_Q
+	)
 {
 	register int16_t i, j;
 	const int16_t *cb_currentstage, *cb_table;
@@ -423,9 +433,9 @@ void vq_msd2(const int16_t * cb, int16_t * u_hat, const int16_t * u_est,
 
 	/* add estimate on (if non-null), or clear vector */
 	if (u_est)
-		(void)v_equ(u_hat, u_est, p);
+		v_equ(u_hat, u_est, p);
 	else
-		(void)v_zap(u_hat, p);
+		v_zap(u_hat, p);
 
 	/* put u_hat to a long buffer */
 	for (i = 0; i < p; i++)
@@ -472,7 +482,7 @@ void vq_msd2(const int16_t * cb, int16_t * u_hat, const int16_t * u_est,
 /*          The coder does not use the returned value from vq_lspw() at all.  */
 
 int32_t vq_enc(const int16_t codebook[], int16_t u[], int16_t levels,
-		int16_t order, int16_t u_hat[], int16_t * indices)
+	int16_t order, int16_t u_hat[], int16_t * indices)
 {
 	register int16_t i, j;
 	const int16_t *p_cb;

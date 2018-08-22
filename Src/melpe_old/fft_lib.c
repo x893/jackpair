@@ -242,9 +242,9 @@ int16_t cfft(int16_t datam1[], int16_t nn)
 				sPR = data[i];
 				sQR = data[j];
 				data[i] =
-				    melpe_extract_h(melpe_L_add(melpe_L_deposit_h(sPR), L_tempr));
+					melpe_extract_h(melpe_L_add(melpe_L_deposit_h(sPR), L_tempr));
 				data[j] =
-				    melpe_extract_h(melpe_L_sub(melpe_L_deposit_h(sPR), L_tempr));
+					melpe_extract_h(melpe_L_sub(melpe_L_deposit_h(sPR), L_tempr));
 
 				L_temp1 = melpe_L_mult(wi, sQR);
 				L_temp2 = melpe_L_mult(wr, data[j + 1]);
@@ -254,9 +254,9 @@ int16_t cfft(int16_t datam1[], int16_t nn)
 
 				sPI = data[i + 1];
 				data[i + 1] =
-				    melpe_extract_h(melpe_L_sub(melpe_L_deposit_h(sPI), L_tempi));
+					melpe_extract_h(melpe_L_sub(melpe_L_deposit_h(sPI), L_tempi));
 				data[j + 1] =
-				    melpe_extract_h(melpe_L_add(melpe_L_deposit_h(sPI), L_tempi));
+					melpe_extract_h(melpe_L_add(melpe_L_deposit_h(sPI), L_tempi));
 			}
 			index = melpe_add(index, index_step);
 			wr = wr_array[index];

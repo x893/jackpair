@@ -60,7 +60,7 @@ Secretariat fax: +33 493 65 47 16.
 #endif
 
 #define INV_LPC_ORD			2979
-			       /* ((1.0/(LPC_ORD + 1))*(1<<15) + 0.5) for Q15 */
+/* ((1.0/(LPC_ORD + 1))*(1<<15) + 0.5) for Q15 */
 #define X005_Q19			26214	/* 0.05 * (1 << 19) */
 #define X025_Q15			8192	/* 0.25 * (1 << 15) */
 #define X1_732_Q14			28377	/* 1.732 * (1 << 14) */
@@ -117,7 +117,7 @@ void synthesis(struct melp_param *par, int16_t sp_out[])
 			v_equ(sp_out, sigsave, frameSize);
 			/* past end: save remainder in sigsave[0] */
 			v_equ(sigsave, &sigsave[frameSize],
-			      (int16_t) (syn_begin - frameSize));
+				(int16_t)(syn_begin - frameSize));
 		} else
 			v_equ(sp_out, sigsave, syn_begin);
 	}
@@ -129,10 +129,10 @@ void synthesis(struct melp_param *par, int16_t sp_out[])
 		erase = melp_chn_read(&quant_par, par, &prev_par, chbuf);
 #if !SKIP_CHANNEL
 	else
-		erase = (BOOLEAN) low_rate_chn_read(&quant_par, par, &prev_par);
+		erase = (BOOLEAN)low_rate_chn_read(&quant_par, par, &prev_par);
 #endif
-	
-	
+
+
 	if (rate == RATE2400) {
 		par->uv_flag = quant_par.uv_flag[0];
 		melp_syn(par, sp_out);
@@ -141,7 +141,7 @@ void synthesis(struct melp_param *par, int16_t sp_out[])
 			melp_syn(&par[i], &sp_out[i * FRAME]);
 			if ((syn_begin > 0) && (i < NF - 1))
 				v_equ(&sp_out[(i + 1) * FRAME], sigsave,
-				      syn_begin);
+					syn_begin);
 		}
 	}
 }
@@ -203,11 +203,11 @@ static void melp_syn(struct melp_param *par, int16_t sp_out[])
 	} else if (!erase) {
 		for (i = 0; i < NUM_GAINFR; i++) {
 			noise_est(par->gain[i], &noise_gain, UPCONST_Q19,
-				  DOWNCONST_Q17, MIN_NOISE_Q8, MAX_NOISE_Q8);
+				DOWNCONST_Q17, MIN_NOISE_Q8, MAX_NOISE_Q8);
 
 			/* Adjust gain based on noise level (noise suppression) */
 			noise_sup(&par->gain[i], noise_gain, MAX_NS_SUP_Q8,
-				  MAX_NS_ATT_Q8, NFACT_Q8);
+				MAX_NS_ATT_Q8, NFACT_Q8);
 		}
 	}
 
@@ -298,17 +298,17 @@ static void melp_syn(struct melp_param *par, int16_t sp_out[])
 			gain = melpe_extract_h(melpe_L_add(L_temp1, L_temp2));	/* gain in Q8 */
 		}
 
-/* Set overall interpolation path based on gain change */
+		/* Set overall interpolation path based on gain change */
 
 		temp1 =
-		    melpe_sub(par->gain[NUM_GAINFR - 1],
-			prev_par.gain[NUM_GAINFR - 1]);
+			melpe_sub(par->gain[NUM_GAINFR - 1],
+				prev_par.gain[NUM_GAINFR - 1]);
 		if (melpe_abs_s(temp1) > SIX_Q8) {
 			/* Power surge: use gain adjusted interpolation */
 			/*      intfact = (gain - prev_par.gain[NUM_GAINFR - 1])/temp; */
 			temp2 = melpe_sub(gain, prev_par.gain[NUM_GAINFR - 1]);
 			if (((temp2 > 0) && (temp1 < 0)) ||
-			    ((temp2 < 0) && (temp1 > 0)))
+				((temp2 < 0) && (temp1 > 0)))
 				intfact = 0;
 			else {
 				temp1 = melpe_abs_s(temp1);
@@ -368,9 +368,9 @@ static void melp_syn(struct melp_param *par, int16_t sp_out[])
 		/* interpolate pulse and noise coefficients */
 		temp1 = sqrt_fxp(ifact, 15);
 		interp_array(prev_pcof, curr_pcof, pulse_cof, temp1,
-			     MIX_ORD + 1);
+			MIX_ORD + 1);
 		interp_array(prev_ncof, curr_ncof, noise_cof, temp1,
-			     MIX_ORD + 1);
+			MIX_ORD + 1);
 
 		set_fc(prev_par.bpvc, &fc_prev);
 		set_fc(par->bpvc, &fc_curr);
@@ -406,7 +406,7 @@ static void melp_syn(struct melp_param *par, int16_t sp_out[])
 		fill(fs_real, ONE_Q13, length);
 		fs_real[0] = 0;
 		interp_array(prev_par.fs_mag, par->fs_mag, &fs_real[1], intfact,
-			     NUM_HARM);
+			NUM_HARM);
 
 		harm_syn_pitch(fs_real, &sigbuf[BEGIN], fc, length);
 		v_scale(&sigbuf[BEGIN], pulse_gain, length);	/* sigbuf[] is Q0 */
@@ -414,36 +414,36 @@ static void melp_syn(struct melp_param *par, int16_t sp_out[])
 		/* Adaptive spectral enhancement */
 		v_equ(&sigbuf[BEGIN - LPC_ORD], ase_del, LPC_ORD);
 		lpc_synthesis(&sigbuf[BEGIN], &sigbuf[BEGIN], ase_den, LPC_ORD,
-			      length);
+			length);
 		v_equ(ase_del, &sigbuf[BEGIN + length - LPC_ORD], LPC_ORD);
 
 		zerflt(&sigbuf[BEGIN], ase_num, &sigbuf[BEGIN], LPC_ORD,
-		       length);
+			length);
 		v_equ(&sigbuf[BEGIN - TILT_ORD], tilt_del, TILT_ORD);
 		v_equ(tilt_del, &sigbuf[length + BEGIN - TILT_ORD], TILT_ORD);
 		zerflt_Q(&sigbuf[BEGIN], tilt_cof, &sigbuf[BEGIN], TILT_ORD,
-			 length, 15);
+			length, 15);
 
 		/* Possible Signal overflow at this point! */
 		/* Perform LPC synthesis filtering */
 		v_equ(&sigbuf[BEGIN - LPC_ORD], lpc_del, LPC_ORD);
 		lpc_synthesis(&sigbuf[BEGIN], &sigbuf[BEGIN], &(lpc[1]),
-			      LPC_ORD, length);
+			LPC_ORD, length);
 		v_equ(lpc_del, &sigbuf[length + BEGIN - LPC_ORD], LPC_ORD);
 		/* Adjust scaling of synthetic speech, sigbuf in Q0 */
 		scale_adj(&sigbuf[BEGIN], gain, length, SCALEOVER,
-			  INV_SCALEOVER_Q18);
+			INV_SCALEOVER_Q18);
 
 		/* Implement pulse dispersion filter on output speech */
 		v_equ(&sigbuf[BEGIN - DISP_ORD], disp_del, DISP_ORD);
 		v_equ(disp_del, &sigbuf[length + BEGIN - DISP_ORD], DISP_ORD);
 		zerflt_Q(&sigbuf[BEGIN], disp_cof, &sigbuf[BEGIN], DISP_ORD,
-			 length, 15);
+			length, 15);
 
 		/* Copy processed speech to output array (not past frame end) */
 		if (melpe_add(syn_begin, length) >= FRAME) {
 			v_equ(&sp_out[syn_begin], &sigbuf[BEGIN],
-			      (int16_t) (FRAME - syn_begin));
+				(int16_t)(FRAME - syn_begin));
 
 #if POSTFILTER
 			postfilt(sp_out, prev_par.lsf, par->lsf);
@@ -451,7 +451,7 @@ static void melp_syn(struct melp_param *par, int16_t sp_out[])
 
 			/* past end: save remainder in sigsave[0] */
 			v_equ(sigsave, &sigbuf[BEGIN + FRAME - syn_begin],
-			      (int16_t) (length - (FRAME - syn_begin)));
+				(int16_t)(length - (FRAME - syn_begin)));
 		} else
 			v_equ(&sp_out[syn_begin], &sigbuf[BEGIN], length);
 

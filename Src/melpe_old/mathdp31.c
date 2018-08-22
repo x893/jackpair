@@ -45,28 +45,28 @@ Secretariat fax: +33 493 65 47 16.
 #include "sc1200.h"
 #include "mathhalf.h"
 
-/****************************************************************************
- *
- *	   FUNCTION NAME: L_mpy_ls
- *
- *	   PURPOSE:    Multiply a 32 bit number (L_var2) and a 16 bit
- *				   number (var1) returning a 32 bit result. L_var2
- *				   is truncated to 31 bits prior to executing the
- *				   multiply.
- *
- *	   INPUTS:
- *
- *		 L_var2 			A int32_t input variable
- *
- *		 var1				A int16_t input variable
- *
- *	   OUTPUTS: 			none
- *
- *	   RETURN VALUE:		A int32_t value
- *
- *	   KEYWORDS: mult,mpy,multiplication
- *
- ***************************************************************************/
+ /****************************************************************************
+  *
+  *	   FUNCTION NAME: L_mpy_ls
+  *
+  *	   PURPOSE:    Multiply a 32 bit number (L_var2) and a 16 bit
+  *				   number (var1) returning a 32 bit result. L_var2
+  *				   is truncated to 31 bits prior to executing the
+  *				   multiply.
+  *
+  *	   INPUTS:
+  *
+  *		 L_var2 			A int32_t input variable
+  *
+  *		 var1				A int16_t input variable
+  *
+  *	   OUTPUTS: 			none
+  *
+  *	   RETURN VALUE:		A int32_t value
+  *
+  *	   KEYWORDS: mult,mpy,multiplication
+  *
+  ***************************************************************************/
 
 int c_carry;
 

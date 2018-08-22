@@ -79,7 +79,7 @@ static const int16_t sqrt_tukey_256_180[ENH_WINLEN] = {	/* Q15 */
 /* ====== Entities from Enhanced_Data ====== */
 static int16_t enh_i = 0;	/* formerly D->I */
 static int16_t lambdaD[ENH_VEC_LENF];	/* overestimated noise */
-					       /* psd(noise_bias * noisespect) */
+						   /* psd(noise_bias * noisespect) */
 static int16_t lambdaD_shift[ENH_VEC_LENF];
 static int16_t SN_LT;		/* long term SNR */
 static int16_t SN_LT_shift;
@@ -95,7 +95,7 @@ static int16_t av2_shift[ENH_VEC_LENF];
 static int16_t act_min[ENH_VEC_LENF];	/* current minimum of long window */
 static int16_t act_min_shift[ENH_VEC_LENF];
 static int16_t act_min_sub[ENH_VEC_LENF];
-					     /* current minimum of sub-window */
+/* current minimum of sub-window */
 static int16_t act_min_sub_shift[ENH_VEC_LENF];
 static int16_t vk[ENH_VEC_LENF];
 static int16_t vk_shift[ENH_VEC_LENF];
@@ -103,16 +103,16 @@ static int16_t ksi[ENH_VEC_LENF];	/* a priori SNR */
 static int16_t ksi_shift[ENH_VEC_LENF];
 
 static int16_t var_rel[ENH_VEC_LENF];
-				       /* est. relative var. of smoothedspect */
+/* est. relative var. of smoothedspect */
 static int16_t var_rel_av;	/* average relative var. of smoothedspect */
 
 /* only for minimum statistics */
 
 static int16_t smoothedspect[ENH_VEC_LENF];	/* smoothed signal spectrum */
 static int16_t var_sp_av[ENH_VEC_LENF];
-					   /* estimated mean of smoothedspect */
+/* estimated mean of smoothedspect */
 static int16_t var_sp_2[ENH_VEC_LENF];
-				     /* esitmated 2nd moment of smoothedspect */
+/* esitmated 2nd moment of smoothedspect */
 static int16_t noisespect[ENH_VEC_LENF];	/* estimated noise psd */
 static int16_t noisespect2[ENH_VEC_LENF];
 static int16_t alphacorr;	/* correction factor for alpha_var, Q15 */
@@ -122,36 +122,36 @@ static int16_t circb[NUM_MINWIN][ENH_VEC_LENF];	/* ring buffer */
 static int16_t circb_shift[NUM_MINWIN][ENH_VEC_LENF];
 
 static int16_t initial_noise[ENH_WINLEN];	/* look ahead noise */
-							      /* samples (Q0) */
+								  /* samples (Q0) */
 static int16_t speech_in_npp[ENH_WINLEN];	/* input of one frame */
 static int16_t ybuf[2 * ENH_WINLEN + 2];
-				 /* buffer for FFT, this can be eliminated if */
-						    /* we can write a better real-FFT program for DSP */
+/* buffer for FFT, this can be eliminated if */
+		   /* we can write a better real-FFT program for DSP */
 static int32_t temp_yy[ENH_WINLEN + 2];
 
-static unsigned char npp_vad=0;
+static unsigned char npp_vad = 0;
 
 /* ====== Prototypes ====== */
 
 static void smoothing_win(int16_t initial_noise[]);
 static void compute_qk(int16_t qk[], int16_t gamaK[],
-		       int16_t gamaK_shift[], int16_t GammaQ_TH);
+	int16_t gamaK_shift[], int16_t GammaQ_TH);
 static void gain_log_mmse(int16_t qk[], int16_t Gain[],
-			  int16_t gamaK[], int16_t gamaK_shift[],
-			  int16_t m);
+	int16_t gamaK[], int16_t gamaK_shift[],
+	int16_t m);
 static int16_t ksi_min_adapt(BOOLEAN n_flag, int16_t ksi_min,
-			       int16_t sn_lt, int16_t sn_lt_shift);
+	int16_t sn_lt, int16_t sn_lt_shift);
 static void smoothed_periodogram(int16_t YY_av, int16_t yy_shift);
 static void bias_compensation(int16_t biased_spect[],
-			      int16_t bias_shift[],
-			      int16_t biased_spect_sub[],
-			      int16_t bias_sub_shift[]);
+	int16_t bias_shift[],
+	int16_t biased_spect_sub[],
+	int16_t bias_sub_shift[]);
 static int16_t noise_slope(void);
 static int16_t comp_data_shift(int16_t num1, int16_t shift1,
-				 int16_t num2, int16_t shift2);
+	int16_t num2, int16_t shift2);
 static void min_search(int16_t biased_spect[], int16_t bias_shift[],
-		       int16_t biased_spect_sub[],
-		       int16_t bias_sub_shift[]);
+	int16_t biased_spect_sub[],
+	int16_t bias_sub_shift[]);
 void enh_init(void);
 static void minstat_init(void);
 static void process_frame(int16_t inspeech[], int16_t outspeech[]);
@@ -185,7 +185,7 @@ unsigned char npp(int16_t sp_in[], int16_t sp_out[])
 		else {
 			v_zap(initial_noise, ENH_OVERLAP_LEN);
 			v_equ(&initial_noise[ENH_OVERLAP_LEN], sp_in,
-			      ENH_WIN_SHIFT);
+				ENH_WIN_SHIFT);
 		}
 		enh_init();	/* Initialize enhancement routine */
 		v_zap(speech_in_npp, ENH_WINLEN);
@@ -203,11 +203,11 @@ unsigned char npp(int16_t sp_in[], int16_t sp_out[])
 	/* Overlap-add the output buffer. */
 	v_add(speech_out_npp, speech_overlap, ENH_OVERLAP_LEN);
 	v_equ(speech_overlap, &(speech_out_npp[ENH_WIN_SHIFT]),
-	      ENH_OVERLAP_LEN);
+		ENH_OVERLAP_LEN);
 
 	/* ======== Output enhanced speech ======== */
 	v_equ(sp_out, speech_out_npp, ENH_WIN_SHIFT);
-	
+
 	return npp_vad;
 }
 
@@ -260,7 +260,7 @@ static void gain_mod(int16_t qk[], int16_t GainD[], int16_t m)
 		L_sum = melpe_L_add(L_sum, melpe_L_deposit_h(temp4));	/* add exp */
 		shift = melpe_extract_h(L_sum);	/* this is exp part */
 
-		temp4 = (int16_t) (melpe_extract_l(melpe_L_shr(L_sum, 1)) & 0x7fff);
+		temp4 = (int16_t)(melpe_extract_l(melpe_L_shr(L_sum, 1)) & 0x7fff);
 		temp1 = melpe_shr(melpe_mult(temp4, 9864), 3);	/* change to base 10 Q12 */
 		temp1 = pow10_fxp(temp1, 14);	/* out Q14 */
 		L_tmp = L_mpy_ls(L_tmp, temp1);	/* Q30 */
@@ -294,7 +294,7 @@ static void gain_mod(int16_t qk[], int16_t GainD[], int16_t m)
 /*		This uses an harddecision approach due to Malah (ICASSP 1999).		 */
 /*****************************************************************************/
 static void compute_qk(int16_t qk[], int16_t gamaK[],
-		       int16_t gamaK_shift[], int16_t GammaQ_TH)
+	int16_t gamaK_shift[], int16_t GammaQ_TH)
 {
 	register int16_t i;
 	static BOOLEAN first_time = TRUE;
@@ -324,8 +324,8 @@ static void compute_qk(int16_t qk[], int16_t gamaK[],
 /*	  Approximation of the exponential integral due to Malah, 1996			 */
 /*****************************************************************************/
 static void gain_log_mmse(int16_t qk[], int16_t Gain[],
-			  int16_t gamaK[], int16_t gamaK_shift[],
-			  int16_t m)
+	int16_t gamaK[], int16_t gamaK_shift[],
+	int16_t m)
 {
 	register int16_t i;
 	int16_t ksi_vq, temp1, temp2, shift;
@@ -337,7 +337,7 @@ static void gain_log_mmse(int16_t qk[], int16_t Gain[],
 		temp1 = melpe_sub(ONE_Q15, qk[i]);
 		shift = melpe_norm_s(temp1);
 		temp1 = melpe_shl(temp1, shift);
-		temp2 = melpe_sub(ksi_shift[i], (int16_t) (-shift));
+		temp2 = melpe_sub(ksi_shift[i], (int16_t)(-shift));
 		/*      ksi[] + 1.0 - qk[] */
 		if (temp2 > 0) {
 			temp1 = melpe_shr(temp1, melpe_add(temp2, 1));
@@ -369,7 +369,7 @@ static void gain_log_mmse(int16_t qk[], int16_t Gain[],
 			temp1 = log10_fxp(vk[i], 15);	/* Q12 */
 			L_sum = melpe_L_shl(melpe_L_deposit_l(temp1), 14);	/* Q26 */
 			L_sum =
-			    melpe_L_add(L_sum, melpe_L_shl(melpe_L_mult(vk_shift[i], 9864), 10));
+				melpe_L_add(L_sum, melpe_L_shl(melpe_L_mult(vk_shift[i], 9864), 10));
 			L_sum = L_mpy_ls(L_sum, -18923);
 			/* -18923 = -2.31 (Q13). out Q24 */
 			L_sum = melpe_L_sub(L_sum, 10066330L);	/* 10066330L = 0.6 (Q24), Q24 */
@@ -384,12 +384,12 @@ static void gain_log_mmse(int16_t qk[], int16_t Gain[],
 			/*      eiv = pow(10, -0.52 * vk[i] - 0.26); */
 			L_sum = melpe_L_mult(vk[i], -17039);	/* -17039 == -0.52 Q15 */
 			L_sum =
-			    melpe_L_sub(L_sum, melpe_L_shr(melpe_L_deposit_h(8520), vk_shift[i]));
+				melpe_L_sub(L_sum, melpe_L_shr(melpe_L_deposit_h(8520), vk_shift[i]));
 			/* 8520 == 0.26 Q15 */
 			L_sum = melpe_L_shr(L_sum, melpe_sub(14, vk_shift[i]));
 			L_sum = L_mpy_ls(L_sum, 27213);	/* Q15 to base 2 */
 			shift = melpe_extract_h(melpe_L_shl(L_sum, 1));	/* integer part */
-			temp1 = (int16_t) (melpe_extract_l(L_sum) & 0x7fff);
+			temp1 = (int16_t)(melpe_extract_l(L_sum) & 0x7fff);
 			temp1 = melpe_shr(melpe_mult(temp1, 9864), 3);	/* Q12 to base 10 */
 			temp1 = pow10_fxp(temp1, 14);	/* output Q14 */
 			L_sum = melpe_L_shl(melpe_L_deposit_l(temp1), 10);	/* Q24 now */
@@ -415,7 +415,7 @@ static void gain_log_mmse(int16_t qk[], int16_t Gain[],
 			continue;
 		} else {
 			temp1 = melpe_extract_l(melpe_L_shr(L_sum, 9));
-			temp1 = (int16_t) (temp1 & 0x7fff);
+			temp1 = (int16_t)(temp1 & 0x7fff);
 			temp1 = melpe_shr(melpe_mult(temp1, 9864), 3);	/* change to base 10 Q12 */
 			temp1 = pow10_fxp(temp1, 14);
 
@@ -433,7 +433,7 @@ static void gain_log_mmse(int16_t qk[], int16_t Gain[],
 /*	   Subroutine ksi_min_adapt: computes the adaptive ksi_min				 */
 /*****************************************************************************/
 static int16_t ksi_min_adapt(BOOLEAN n_flag, int16_t ksi_min,
-			       int16_t sn_lt, int16_t sn_lt_shift)
+	int16_t sn_lt, int16_t sn_lt_shift)
 {
 	int16_t ksi_min_new, temp, shift;
 	int32_t L_sum;
@@ -443,13 +443,13 @@ static int16_t ksi_min_adapt(BOOLEAN n_flag, int16_t ksi_min,
 	else {
 		if (sn_lt_shift > 0) {
 			L_sum =
-			    melpe_L_add(melpe_L_deposit_l(sn_lt),
-				  melpe_L_shr(X05_Q15, sn_lt_shift));
+				melpe_L_add(melpe_L_deposit_l(sn_lt),
+					melpe_L_shr(X05_Q15, sn_lt_shift));
 			shift = sn_lt_shift;
 		} else {
 			L_sum =
-			    melpe_L_add(melpe_L_shl(melpe_L_deposit_l(sn_lt), sn_lt_shift),
-				  X05_Q15);
+				melpe_L_add(melpe_L_shl(melpe_L_deposit_l(sn_lt), sn_lt_shift),
+					X05_Q15);
 			shift = 0;
 		}
 
@@ -468,7 +468,7 @@ static int16_t ksi_min_adapt(BOOLEAN n_flag, int16_t ksi_min,
 		L_sum = melpe_L_add(L_sum, melpe_L_mult(shift, 21299));	/* 21299 = 0.65 Q15 */
 		L_sum = melpe_L_sub(L_sum, 472742L);	/* 472742 = 7.2134752 Q16 */
 		shift = melpe_extract_h(L_sum);	/* the pure shift */
-		temp = (int16_t) (melpe_extract_l(melpe_L_shr(L_sum, 1)) & 0x7fff);
+		temp = (int16_t)(melpe_extract_l(melpe_L_shr(L_sum, 1)) & 0x7fff);
 		temp = melpe_mult(temp, 9864);	/* change to base 10 */
 		temp = melpe_shr(temp, 3);	/* change to Q12 */
 		temp = pow10_fxp(temp, 14);
@@ -504,11 +504,11 @@ static void smoothing_win(int16_t initial_noise[])
 		initial_noise[i] = melpe_mult(initial_noise[i], wtr_front[i]);
 	for (i = ENH_WINLEN - WTR_FRONT_LEN + 1; i < ENH_WINLEN; i++)
 		initial_noise[i] =
-		    melpe_mult(initial_noise[i], wtr_front[ENH_WINLEN - i]);
+		melpe_mult(initial_noise[i], wtr_front[ENH_WINLEN - i]);
 
 	/* Clearing the central part of initial_noise[]. */
 	v_zap(&(initial_noise[WTR_FRONT_LEN]),
-	      ENH_WINLEN - 2 * WTR_FRONT_LEN + 1);
+		ENH_WINLEN - 2 * WTR_FRONT_LEN + 1);
 }
 
 /***************************************************************************/
@@ -531,15 +531,15 @@ static void smoothed_periodogram(int16_t YY_av, int16_t yy_shift)
 	}
 
 	L_sum = melpe_L_shl(melpe_L_deposit_l(smoothedspect[0]),
-		      melpe_sub(7, melpe_sub(max_shift, sm_shift[0])));
+		melpe_sub(7, melpe_sub(max_shift, sm_shift[0])));
 	L_sum = melpe_L_add(L_sum, melpe_L_shl(melpe_L_deposit_l(smoothedspect[ENH_VEC_LENF - 1]),
-				   melpe_sub(7,
-				       melpe_sub(max_shift,
-					   sm_shift[ENH_VEC_LENF - 1]))));
+		melpe_sub(7,
+			melpe_sub(max_shift,
+				sm_shift[ENH_VEC_LENF - 1]))));
 	for (i = 1; i < ENH_VEC_LENF - 1; i++)
 		L_sum = melpe_L_add(L_sum, melpe_L_shl(melpe_L_deposit_l(smoothedspect[i]),
-					   melpe_sub(8,
-					       melpe_sub(max_shift, sm_shift[i]))));
+			melpe_sub(8,
+				melpe_sub(max_shift, sm_shift[i]))));
 
 	/* Now L_sum contains smoothed_av.  Here we do not multiply L_sum with    */
 	/* win_len_inv because we do not do this on YY_av either.                 */
@@ -587,7 +587,7 @@ static void smoothed_periodogram(int16_t YY_av, int16_t yy_shift)
 
 	/* -- alphacorr = 0.7*alphacorr + 0.3*alphacorr_new -- */
 	alphacorr = melpe_extract_h(melpe_L_add(melpe_L_mult(X07_Q15, alphacorr),
-				    melpe_L_mult(X03_Q15, alphacorr_new)));
+		melpe_L_mult(X03_Q15, alphacorr_new)));
 
 	/* -- compute alpha_N_min_1 -- */
 	/* -- alpha_N_min_1 = pow(SN_LT, PDECAY_NUM) */
@@ -599,7 +599,7 @@ static void smoothed_periodogram(int16_t YY_av, int16_t yy_shift)
 		L_sum = melpe_L_shl(melpe_L_deposit_l(SN_LT), SN_LT_shift);
 	temp = L_log10_fxp(L_sum, 15);	/* output Q11 */
 	temp = melpe_shl(temp, 1);	/* convert to Q12 */
-	temp = melpe_mult(temp, (int16_t) PDECAY_NUM);
+	temp = melpe_mult(temp, (int16_t)PDECAY_NUM);
 	alpha_N_min_1 = pow10_fxp(temp, 15);
 
 	/* -- alpha_N_min_1 = (0.3 < alpha_N_min_1 ? 0.3 : alpha_N_min_1) -- */
@@ -620,13 +620,13 @@ static void smoothed_periodogram(int16_t YY_av, int16_t yy_shift)
 		shift = melpe_sub(sm_shift[i], noise_shift[i]);
 		if (shift > 0) {
 			L_tmp = melpe_L_sub(melpe_L_deposit_h(smoothedspect[i]),
-				      melpe_L_shr(melpe_L_deposit_h(noisespect[i]), shift));
+				melpe_L_shr(melpe_L_deposit_h(noisespect[i]), shift));
 			shift = sm_shift[i];
 		} else {
 			L_tmp =
-			    melpe_L_sub(melpe_L_shr
-				  (melpe_L_deposit_h(smoothedspect[i]), melpe_abs_s(shift)),
-				  melpe_L_deposit_h(tmpns));
+				melpe_L_sub(melpe_L_shr
+				(melpe_L_deposit_h(smoothedspect[i]), melpe_abs_s(shift)),
+					melpe_L_deposit_h(tmpns));
 			shift = noise_shift[i];
 		}
 
@@ -677,15 +677,15 @@ static void smoothed_periodogram(int16_t YY_av, int16_t yy_shift)
 		smav_shift = melpe_sub(YY_shift[i], sm_shift[i]);
 		if (smav_shift > 0) {
 			L_sum =
-			    melpe_L_shr(melpe_L_mult(tmpalpha, smoothedspect[i]),
-				  smav_shift);
+				melpe_L_shr(melpe_L_mult(tmpalpha, smoothedspect[i]),
+					smav_shift);
 			L_sum = melpe_L_add(L_sum, melpe_L_mult(temp, YY[i]));
 			sm_shift[i] = YY_shift[i];
 		} else {
 			L_sum = melpe_L_mult(tmpalpha, smoothedspect[i]);
 			L_sum =
-			    melpe_L_add(L_sum,
-				  melpe_L_shl(melpe_L_mult(temp, YY[i]), smav_shift));
+				melpe_L_add(L_sum,
+					melpe_L_shl(melpe_L_mult(temp, YY[i]), smav_shift));
 		}
 		if (L_sum < 1)
 			L_sum = 1;
@@ -700,9 +700,9 @@ static void smoothed_periodogram(int16_t YY_av, int16_t yy_shift)
 /* normalize it, and use it to compute a biased smoothed periodogram		 */
 /*****************************************************************************/
 static void bias_compensation(int16_t biased_spect[],
-			      int16_t bias_shift[],
-			      int16_t biased_spect_sub[],
-			      int16_t bias_sub_shift[])
+	int16_t bias_shift[],
+	int16_t biased_spect_sub[],
+	int16_t bias_sub_shift[])
 {
 	register int16_t i;
 	int16_t tmp, tmp1, tmp2, tmp5;
@@ -727,13 +727,13 @@ static void bias_compensation(int16_t biased_spect[],
 		av__shift = melpe_sub(sm_shift[i], av_shift[i]);
 		if (av__shift > 0) {
 			L_max1 =
-			    melpe_L_add(melpe_L_shr
-				  (melpe_L_mult(beta_var, var_sp_av[i]), av__shift),
-				  L_sum);
+				melpe_L_add(melpe_L_shr
+				(melpe_L_mult(beta_var, var_sp_av[i]), av__shift),
+					L_sum);
 			av_shift[i] = sm_shift[i];
 		} else
 			L_max1 = melpe_L_add(melpe_L_mult(beta_var, var_sp_av[i]),
-				       melpe_L_shl(L_sum, av__shift));
+				melpe_L_shl(L_sum, av__shift));
 		if (L_max1 < 1)
 			L_max1 = 1;
 		shift1 = melpe_norm_l(L_max1);
@@ -745,14 +745,14 @@ static void bias_compensation(int16_t biased_spect[],
 		av2__shift = melpe_sub(melpe_shl(sm_shift[i], 1), av2_shift[i]);
 		if (av2__shift > 0) {
 			L_max2 =
-			    melpe_L_add(melpe_L_shr
-				  (melpe_L_mult(beta_var, var_sp_2[i]), av2__shift),
-				  L_mpy_ls(L_sum, smoothedspect[i]));
+				melpe_L_add(melpe_L_shr
+				(melpe_L_mult(beta_var, var_sp_2[i]), av2__shift),
+					L_mpy_ls(L_sum, smoothedspect[i]));
 			av2_shift[i] = melpe_shl(sm_shift[i], 1);
 		} else
 			L_max2 = melpe_L_add(melpe_L_mult(beta_var, var_sp_2[i]),
-				       melpe_L_shl(L_mpy_ls(L_sum, smoothedspect[i]),
-					     av2__shift));
+				melpe_L_shl(L_mpy_ls(L_sum, smoothedspect[i]),
+					av2__shift));
 
 		if (L_max2 < 1)
 			L_max2 = 1;
@@ -767,13 +767,13 @@ static void bias_compensation(int16_t biased_spect[],
 		shift3 = melpe_sub(av2_shift[i], melpe_shl(av_shift[i], 1));
 		if (shift3 > 0) {
 			L_sum =
-			    melpe_L_sub(melpe_L_deposit_h(var_sp_2[i]),
-				  melpe_L_shr(L_sum, shift3));
+				melpe_L_sub(melpe_L_deposit_h(var_sp_2[i]),
+					melpe_L_shr(L_sum, shift3));
 			shift4 = av2_shift[i];
 		} else {
 			L_sum =
-			    melpe_L_sub(melpe_L_shl(melpe_L_deposit_h(var_sp_2[i]), shift3),
-				  L_sum);
+				melpe_L_sub(melpe_L_shl(melpe_L_deposit_h(var_sp_2[i]), shift3),
+					L_sum);
 			shift4 = melpe_shl(av_shift[i], 1);
 		}
 		shift1 = melpe_sub(melpe_norm_l(L_sum), 1);
@@ -871,7 +871,7 @@ static int16_t noise_slope()
 /* The sign of the returned value is the same as that of (x1 - x2).        */
 /***************************************************************************/
 static int16_t comp_data_shift(int16_t num1, int16_t shift1,
-				 int16_t num2, int16_t shift2)
+	int16_t num2, int16_t shift2)
 {
 	int16_t shift;
 
@@ -894,7 +894,7 @@ static int16_t comp_data_shift(int16_t num1, int16_t shift1,
 /*	Subroutine min_search: find minimum of psd's in circular buffer 	   */
 /***************************************************************************/
 static void min_search(int16_t biased_spect[], int16_t bias_shift[],
-		       int16_t biased_spect_sub[], int16_t bias_sub_shift[])
+	int16_t biased_spect_sub[], int16_t bias_sub_shift[])
 {
 	register int16_t i, k;
 	static BOOLEAN localflag[ENH_VEC_LENF];	/* local minimum indicator */
@@ -913,7 +913,7 @@ static void min_search(int16_t biased_spect[], int16_t bias_shift[],
 
 		for (i = 0; i < ENH_VEC_LENF; i++) {
 			if (comp_data_shift(biased_spect[i], bias_shift[i],
-					    act_min[i], act_min_shift[i]) < 0) {
+				act_min[i], act_min_shift[i]) < 0) {
 				act_min[i] = biased_spect[i];	/* update minimum */
 				act_min_shift[i] = bias_shift[i];
 				act_min_sub[i] = biased_spect_sub[i];
@@ -934,8 +934,8 @@ static void min_search(int16_t biased_spect[], int16_t bias_shift[],
 			temp2 = circb_shift[0][i];
 			for (k = 1; k < NUM_MINWIN; k++) {
 				if (comp_data_shift
-				    (circb[k][i], circb_shift[k][i], temp1,
-				     temp2) < 0) {
+				(circb[k][i], circb_shift[k][i], temp1,
+					temp2) < 0) {
 					temp1 = circb[k][i];
 					temp2 = circb_shift[k][i];
 				}
@@ -949,12 +949,12 @@ static void min_search(int16_t biased_spect[], int16_t bias_shift[],
 			tmp = melpe_mult(noise_slope_max, circb_min[i]);
 			tmp_shift = melpe_add(circb_min_shift[i], 4);	/* adjust for Q11 */
 			if (localflag[i] &&
-			    comp_data_shift(act_min_sub[i],
-					    act_min_sub_shift[i], circb_min[i],
-					    circb_min_shift[i]) > 0
-			    && comp_data_shift(act_min_sub[i],
-					       act_min_sub_shift[i], tmp,
-					       tmp_shift) < 0) {
+				comp_data_shift(act_min_sub[i],
+					act_min_sub_shift[i], circb_min[i],
+					circb_min_shift[i]) > 0
+				&& comp_data_shift(act_min_sub[i],
+					act_min_sub_shift[i], tmp,
+					tmp_shift) < 0) {
 				circb_min[i] = act_min_sub[i];
 				circb_min_shift[i] = act_min_sub_shift[i];
 
@@ -982,13 +982,13 @@ static void min_search(int16_t biased_spect[], int16_t bias_shift[],
 
 	} else {		/* minspec_counter > 1 */
 
-		/* At this point localflag[] is all FALSE.  As we loop through        */
-		/* minspec_counter, if any localflag[] is turned TRUE, it will be     */
-		/* preserved until we go through the (minspec_counter == 0) branch.   */
+	 /* At this point localflag[] is all FALSE.  As we loop through        */
+	 /* minspec_counter, if any localflag[] is turned TRUE, it will be     */
+	 /* preserved until we go through the (minspec_counter == 0) branch.   */
 
 		for (i = 0; i < ENH_VEC_LENF; i++) {
 			if (comp_data_shift(biased_spect[i], bias_shift[i],
-					    act_min[i], act_min_shift[i]) < 0) {
+				act_min[i], act_min_shift[i]) < 0) {
 				/* update minimum */
 				act_min[i] = biased_spect[i];
 				act_min_shift[i] = bias_shift[i];
@@ -999,8 +999,8 @@ static void min_search(int16_t biased_spect[], int16_t bias_shift[],
 		}
 		for (i = 0; i < ENH_VEC_LENF; i++) {
 			if (comp_data_shift
-			    (act_min_sub[i], act_min_sub_shift[i], circb_min[i],
-			     circb_min_shift[i]) < 0) {
+			(act_min_sub[i], act_min_sub_shift[i], circb_min[i],
+				circb_min_shift[i]) < 0) {
 				circb_min[i] = act_min_sub[i];
 				circb_min_shift[i] = act_min_sub_shift[i];
 			}
@@ -1067,13 +1067,13 @@ void enh_init()
 	temp_yy[0] = melpe_L_shr(melpe_L_mult(ybuf[0], ybuf[0]), 1);
 	temp_yy[1] = 0;
 	temp_yy[ENH_WINLEN] =
-	    melpe_L_shr(melpe_L_mult(ybuf[ENH_WINLEN], ybuf[ENH_WINLEN]), 1);
+		melpe_L_shr(melpe_L_mult(ybuf[ENH_WINLEN], ybuf[ENH_WINLEN]), 1);
 	temp_yy[ENH_WINLEN + 1] = 0;
 
 	for (i = 2; i < ENH_WINLEN - 1; i += 2) {
 		temp_yy[i + 1] = 0;
 		temp_yy[i] = melpe_L_shr(melpe_L_add(melpe_L_mult(ybuf[i], ybuf[i]),
-					 melpe_L_mult(ybuf[i + 1], ybuf[i + 1])), 1);
+			melpe_L_mult(ybuf[i + 1], ybuf[i + 1])), 1);
 	}
 
 	L_sum = temp_yy[0];
@@ -1090,7 +1090,7 @@ void enh_init()
 	for (i = 0; i < ENH_WINLEN / 2 - 1; i++) {
 		ybuf[ENH_WINLEN + 2 * i + 2] = ybuf[ENH_WINLEN - 2 * i - 2];
 		ybuf[ENH_WINLEN + 2 * i + 3] =
-		    melpe_negate(ybuf[ENH_WINLEN - 2 * i - 2 + 1]);
+			melpe_negate(ybuf[ENH_WINLEN - 2 * i - 2 + 1]);
 	}
 	guard = fft_npp(ybuf, -1);	/* inverse fft */
 	/* guard = fft(ybuf, ENH_WINLEN, ONE_Q15); */
@@ -1304,7 +1304,7 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 
 	for (i = 1; i < ENH_VEC_LENF - 1; i++)
 		temp_yy[i] = melpe_L_add(melpe_L_mult(ybuf[2 * i], ybuf[2 * i]),
-				   melpe_L_mult(ybuf[2 * i + 1], ybuf[2 * i + 1]));
+			melpe_L_mult(ybuf[2 * i + 1], ybuf[2 * i + 1]));
 
 	max_YY_shift = SW_MIN;
 	for (i = 0; i < ENH_VEC_LENF; i++) {
@@ -1331,16 +1331,16 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 
 	/* ---- Compute YY_av ---- */
 	L_sum =
-	    melpe_L_shl(melpe_L_deposit_l(YY[0]), melpe_sub(7, melpe_sub(max_YY_shift, YY_shift[0])));
+		melpe_L_shl(melpe_L_deposit_l(YY[0]), melpe_sub(7, melpe_sub(max_YY_shift, YY_shift[0])));
 	L_sum =
-	    melpe_L_add(L_sum,
-		  melpe_L_shl(melpe_L_deposit_l(YY[ENH_VEC_LENF - 1]),
-			melpe_sub(7, melpe_sub(max_YY_shift, YY_shift[ENH_VEC_LENF - 1]))));
+		melpe_L_add(L_sum,
+			melpe_L_shl(melpe_L_deposit_l(YY[ENH_VEC_LENF - 1]),
+				melpe_sub(7, melpe_sub(max_YY_shift, YY_shift[ENH_VEC_LENF - 1]))));
 	for (i = 1; i < ENH_VEC_LENF - 1; i++)
 		L_sum = melpe_L_add(L_sum, melpe_L_shl(melpe_L_deposit_l(YY[i]),
-					   melpe_sub(8,
-					       melpe_sub(max_YY_shift,
-						   YY_shift[i]))));
+			melpe_sub(8,
+				melpe_sub(max_YY_shift,
+					YY_shift[i]))));
 	if (L_sum == 0)
 		L_sum = 1;
 	temp1 = melpe_norm_l(L_sum);
@@ -1353,11 +1353,11 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 	/* compute inverse bias and multiply short time periodogram with inverse  */
 	/* bias */
 	bias_compensation(biased_smoothedspect, bias_shift,
-			  biased_smoothedspect_sub, bias_sub_shift);
+		biased_smoothedspect_sub, bias_sub_shift);
 
 	/* determine unbiased noise psd estimate by minimum search */
 	min_search(biased_smoothedspect, bias_shift, biased_smoothedspect_sub,
-		   bias_sub_shift);
+		bias_sub_shift);
 
 	/* compute 'gammas' */
 	for (i = 0; i < ENH_VEC_LENF; i++) {
@@ -1372,21 +1372,21 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 		temp1 = melpe_sub(shift, gamaK_shift[i]);
 		if (temp1 > 0)
 			L_sum =
-			    melpe_L_add(L_sum,
-				  melpe_L_shr(melpe_L_deposit_l(gamaK[i]), melpe_sub(temp1, 7)));
+			melpe_L_add(L_sum,
+				melpe_L_shr(melpe_L_deposit_l(gamaK[i]), melpe_sub(temp1, 7)));
 		else {
 			L_sum = melpe_L_add(melpe_L_shl(L_sum, temp1),
-				      melpe_L_shl(melpe_L_deposit_l(gamaK[i]), 7));
+				melpe_L_shl(melpe_L_deposit_l(gamaK[i]), 7));
 			shift = gamaK_shift[i];
 		}
 	}
 	temp1 = melpe_sub(shift, melpe_sub(gamaK_shift[ENH_VEC_LENF - 1], 1));
 	if (temp1 > 0)
 		L_sum = melpe_L_add(L_sum, melpe_L_shr(melpe_L_deposit_l(gamaK[ENH_VEC_LENF - 1]),
-					   melpe_sub(temp1, 7)));
+			melpe_sub(temp1, 7)));
 	else {
 		L_sum = melpe_L_add(melpe_L_shl(L_sum, temp1),
-			      melpe_L_shl(melpe_L_deposit_l(gamaK[ENH_VEC_LENF - 1]), 7));
+			melpe_L_shl(melpe_L_deposit_l(gamaK[ENH_VEC_LENF - 1]), 7));
 		shift = melpe_sub(gamaK_shift[ENH_VEC_LENF - 1], 1);
 	}
 	if (L_sum == 0)
@@ -1399,7 +1399,7 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 	gamma_max_shift = gamaK_shift[0];
 	for (i = 1; i < ENH_VEC_LENF; i++) {
 		if (comp_data_shift(gamma_max, gamma_max_shift, gamaK[i],
-				    gamaK_shift[i]) < 0) {
+			gamaK_shift[i]) < 0) {
 			gamma_max = gamaK[i];
 			gamma_max_shift = gamaK_shift[i];
 		}
@@ -1409,7 +1409,7 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 	n_flag = FALSE;		/* default flag - signal present */
 
 	if ((comp_data_shift(gamma_max, gamma_max_shift, GAMMAX_THR, 6) < 0) &&
-	    (comp_data_shift(gamma_av, gamma_av_shift, GAMMAV_THR, 1) < 0)) {
+		(comp_data_shift(gamma_av, gamma_av_shift, GAMMAV_THR, 1) < 0)) {
 		n_flag = TRUE;	/* noise-only */
 
 		temp1 = melpe_mult(n_pwr, GAMMAV_THR);
@@ -1418,11 +1418,11 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 			n_flag = FALSE;	/* overiding if frame SNR > 3dB (9/98) */
 	}
 
-	if(npp_vad>VAD_LEVEL) npp_vad--; //restrict counter
-	else if(!n_flag) npp_vad++; //each voice frame
-	else if(npp_vad) npp_vad--; //noise frame if counter is set
-	
-	
+	if (npp_vad > VAD_LEVEL) npp_vad--; //restrict counter
+	else if (!n_flag) npp_vad++; //each voice frame
+	else if (npp_vad) npp_vad--; //noise frame if counter is set
+
+
 	if (enh_i == 1) {	/* Initial estimation of apriori SNR and Gain */
 		for (i = 0; i < ENH_VEC_LENF; i++) {
 			temp_yy[i] = melpe_L_mult(Ymag[i], GM_MIN);
@@ -1432,7 +1432,7 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 		}
 	} else {		/* enh_i > 1 */
 
-		/* estimation of apriori SNR */
+	 /* estimation of apriori SNR */
 		for (i = 0; i < ENH_VEC_LENF; i++) {
 			L_sum = melpe_L_mult(agal[i], agal[i]);
 			L_sum = L_mpy_ls(L_sum, ENH_ALPHAK);
@@ -1445,16 +1445,16 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 			temp4 = lambdaD_shift[i];
 			if (melpe_sub(temp3, temp1) < 0) {
 				temp1 = melpe_shr(temp1, 1);
-				temp2 = (int16_t) (temp2 + 1);
+				temp2 = (int16_t)(temp2 + 1);
 			}
 			ksi[i] = melpe_divide_s(temp1, temp3);
 			ksi_shift[i] = melpe_sub(temp2, temp4);
 			if (comp_data_shift
-			    (gamaK[i], gamaK_shift[i], ENH_INV_NOISE_BIAS,
-			     0) > 0) {
+			(gamaK[i], gamaK_shift[i], ENH_INV_NOISE_BIAS,
+				0) > 0) {
 				L_sum =
-				    melpe_L_shr(melpe_L_deposit_h(ENH_INV_NOISE_BIAS),
-					  gamaK_shift[i]);
+					melpe_L_shr(melpe_L_deposit_h(ENH_INV_NOISE_BIAS),
+						gamaK_shift[i]);
 				L_sum = melpe_L_sub(melpe_L_deposit_h(gamaK[i]), L_sum);
 				shift = melpe_norm_l(L_sum);
 				temp1 = melpe_extract_h(melpe_L_shl(L_sum, shift));
@@ -1463,16 +1463,16 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 				shift = melpe_sub(ksi_shift[i], temp2);
 				if (shift > 0) {
 					ksi[i] =
-					    melpe_add(melpe_shr(ksi[i], 1),
-						melpe_shr(temp1,
-						    (int16_t) (shift + 1)));
+						melpe_add(melpe_shr(ksi[i], 1),
+							melpe_shr(temp1,
+							(int16_t)(shift + 1)));
 					ksi_shift[i] = melpe_add(ksi_shift[i], 1);
 				} else {
 					ksi[i] =
-					    melpe_add(melpe_shl
+						melpe_add(melpe_shl
 						(ksi[i],
-						 (int16_t) (shift - 1)),
-						melpe_shr(temp1, 1));
+							(int16_t)(shift - 1)),
+							melpe_shr(temp1, 1));
 					ksi_shift[i] = melpe_add(temp2, 1);
 				}
 			}
@@ -1482,7 +1482,7 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 		   0.1*ksi_min_adapt(n_flag, ksi_min, SN_LT);          */
 		temp1 = melpe_mult(X09_Q15, Ksi_min_var);
 		temp2 = melpe_mult(X01_Q15, ksi_min_adapt(n_flag, GM_MIN, SN_LT,
-						    SN_LT_shift));
+			SN_LT_shift));
 		Ksi_min_var = melpe_add(temp1, temp2);
 
 		shift = melpe_norm_s(Ksi_min_var);
@@ -1490,7 +1490,7 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 		/* ---- limit the bottom of the ksi ---- */
 		for (i = 0; i < ENH_VEC_LENF; i++) {
 			if (comp_data_shift(ksi[i], ksi_shift[i],
-					    temp1, melpe_negate(shift)) < 0) {
+				temp1, melpe_negate(shift)) < 0) {
 				ksi[i] = temp1;
 				ksi_shift[i] = melpe_negate(shift);
 			}
@@ -1503,7 +1503,7 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 		if (!n_flag) {	/* SIGNAL PRESENT */
 			/* computation of the long term SNR */
 			if (comp_data_shift
-			    (gamma_av, gamma_av_shift, GAMMAV_THR, 1) > 0) {
+			(gamma_av, gamma_av_shift, GAMMAV_THR, 1) > 0) {
 
 				/*      YY_LT = YY_LT * alpha_LT + beta_LT * YY_av; */
 				L_sum = melpe_L_mult(YY_LT, ENH_ALPHA_LT);
@@ -1537,14 +1537,14 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 
 				/*      if (SN_LT < 0); we didn't subtract 1 from SN_LT yet.      */
 				if (comp_data_shift
-				    (SN_LT, SN_LT_shift, ONE_Q15, 0) < 0) {
+				(SN_LT, SN_LT_shift, ONE_Q15, 0) < 0) {
 					SN_LT = SN_LT0;
 					SN_LT_shift = SN_LT0_shift;
 				} else {
 					temp1 = ONE_Q15;
 					L_sum = melpe_L_sub(melpe_L_deposit_h(SN_LT),
-						      melpe_L_shr(melpe_L_deposit_h(temp1),
-							    SN_LT_shift));
+						melpe_L_shr(melpe_L_deposit_h(temp1),
+							SN_LT_shift));
 					shift = melpe_norm_l(L_sum);
 					SN_LT = melpe_extract_h(melpe_L_shl(L_sum, shift));
 					SN_LT_shift = melpe_sub(SN_LT_shift, shift);
@@ -1606,7 +1606,7 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 	for (i = 0; i < ENH_WINLEN / 2 - 1; i++) {
 		ybuf[ENH_WINLEN + 2 * i + 2] = ybuf[ENH_WINLEN - 2 * i - 2];
 		ybuf[ENH_WINLEN + 2 * i + 3] =
-		    melpe_negate(ybuf[ENH_WINLEN - 2 * i - 2 + 1]);
+			melpe_negate(ybuf[ENH_WINLEN - 2 * i - 2 + 1]);
 	}
 
 	guard = fft_npp(ybuf, -1);
@@ -1629,17 +1629,17 @@ static void process_frame(int16_t inspeech[], int16_t outspeech[])
 	}
 
 	L_sum = melpe_L_shl(melpe_L_deposit_l(lambdaD[0]),
-		      melpe_sub(7, melpe_sub(max_YY_shift, lambdaD_shift[0])));
+		melpe_sub(7, melpe_sub(max_YY_shift, lambdaD_shift[0])));
 	L_sum = melpe_L_add(L_sum, melpe_L_shl(melpe_L_deposit_l(lambdaD[ENH_VEC_LENF - 1]),
-				   melpe_sub(7, melpe_sub(max_YY_shift,
-					      lambdaD_shift[ENH_VEC_LENF -
-							    1]))));
+		melpe_sub(7, melpe_sub(max_YY_shift,
+			lambdaD_shift[ENH_VEC_LENF -
+			1]))));
 
 	for (i = 1; i < ENH_VEC_LENF - 1; i++)
 		L_sum = melpe_L_add(L_sum, melpe_L_shl(melpe_L_deposit_l(lambdaD[i]),
-					   melpe_sub(8,
-					       melpe_sub(max_YY_shift,
-						   lambdaD_shift[i]))));
+			melpe_sub(8,
+				melpe_sub(max_YY_shift,
+					lambdaD_shift[i]))));
 	if (L_sum == 0)
 		L_sum = 1;
 	shift = melpe_norm_l(L_sum);

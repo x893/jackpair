@@ -67,14 +67,14 @@ volatile int16_t testl;
 /* Prototypes */
 
 static int16_t double_chk(int16_t sig_in[], int16_t * pcorr,
-			    int16_t pitch, int16_t pdouble,
-			    int16_t pmin, int16_t pmax,
-			    int16_t pmin_q7, int16_t pmax_q7,
-			    int16_t lmin);
+	int16_t pitch, int16_t pdouble,
+	int16_t pmin, int16_t pmax,
+	int16_t pmin_q7, int16_t pmax_q7,
+	int16_t lmin);
 
 static void double_ver(int16_t sig_in[], int16_t * pcorr,
-		       int16_t pitch, int16_t pmin, int16_t pmax,
-		       int16_t pmin_q7, int16_t pmax_q7, int16_t lmin);
+	int16_t pitch, int16_t pmin, int16_t pmax,
+	int16_t pmin_q7, int16_t pmax_q7, int16_t lmin);
 
 /*	double_chk.c: check for pitch doubling and also verify pitch multiple for */
 /*                short pitches.                                              */
@@ -83,17 +83,17 @@ static void double_ver(int16_t sig_in[], int16_t * pcorr,
 /*     sig_in - Q0, pcorr - Q14, pitch - Q7, pdouble - Q7                     */
 
 static int16_t double_chk(int16_t sig_in[], int16_t * pcorr,
-			    int16_t pitch, int16_t pdouble,
-			    int16_t pmin, int16_t pmax,
-			    int16_t pmin_q7, int16_t pmax_q7,
-			    int16_t lmin)
+	int16_t pitch, int16_t pdouble,
+	int16_t pmin, int16_t pmax,
+	int16_t pmin_q7, int16_t pmax_q7,
+	int16_t lmin)
 {
 	int16_t mult, corr, thresh, temp_pit;
 	int16_t temp1, temp2;
 	int32_t L_temp;
 
 	pitch = frac_pch(sig_in, pcorr, pitch, 0, pmin, pmax, pmin_q7, pmax_q7,
-			 lmin);
+		lmin);
 
 	/* compute threshold Q14*Q7>>8 */
 	/* extra right shift to compensate left shift of L_mult */
@@ -120,18 +120,18 @@ static int16_t double_chk(int16_t sig_in[], int16_t * pcorr,
 
 		if (temp_pit >= pmin_q7) {
 			temp_pit =
-			    frac_pch(sig_in, &corr, temp_pit, 0, pmin, pmax,
-				     pmin_q7, pmax_q7, lmin);
+				frac_pch(sig_in, &corr, temp_pit, 0, pmin, pmax,
+					pmin_q7, pmax_q7, lmin);
 			double_ver(sig_in, &corr, temp_pit, pmin, pmax, pmin_q7,
-				   pmax_q7, lmin);
+				pmax_q7, lmin);
 
 			/* stop if submultiple greater than threshold */
 			if (corr > thresh) {
 				/* refine estimate one more time since previous window */
 				/* may be off center slightly and temp_pit has moved */
 				pitch =
-				    frac_pch(sig_in, pcorr, temp_pit, 0, pmin,
-					     pmax, pmin_q7, pmax_q7, lmin);
+					frac_pch(sig_in, pcorr, temp_pit, 0, pmin,
+						pmax, pmin_q7, pmax_q7, lmin);
 				break;
 			}
 		}
@@ -150,8 +150,8 @@ static int16_t double_chk(int16_t sig_in[], int16_t * pcorr,
 /*      pitch - Q7, pcorr - Q14                                               */
 
 static void double_ver(int16_t sig_in[], int16_t * pcorr,
-		       int16_t pitch, int16_t pmin, int16_t pmax,
-		       int16_t pmin_q7, int16_t pmax_q7, int16_t lmin)
+	int16_t pitch, int16_t pmin, int16_t pmax,
+	int16_t pmin_q7, int16_t pmax_q7, int16_t lmin)
 {
 	int16_t multiple;
 	int16_t corr, temp_pit;
@@ -165,7 +165,7 @@ static void double_ver(int16_t sig_in[], int16_t * pcorr,
 	if (multiple > 1) {
 		temp_pit = melpe_extract_l(melpe_L_shr(melpe_L_mult(pitch, multiple), 1));
 		frac_pch(sig_in, &corr, temp_pit, 0, pmin, pmax,
-			 pmin_q7, pmax_q7, lmin);
+			pmin_q7, pmax_q7, lmin);
 
 		/* use smaller of two correlation values */
 		if (corr < *pcorr) {
@@ -177,7 +177,7 @@ static void double_ver(int16_t sig_in[], int16_t * pcorr,
 /* f_pitch_scale.c: Scale pitch signal buffer for best precision              */
 
 int16_t f_pitch_scale(int16_t sig_out[], int16_t sig_in[],
-			int16_t length)
+	int16_t length)
 {
 	register int16_t i;
 	int16_t scale;
@@ -239,7 +239,7 @@ int16_t f_pitch_scale(int16_t sig_out[], int16_t sig_in[],
 /*          f_pitch_scale().                                                  */
 
 int16_t find_pitch(int16_t sig_in[], int16_t * pcorr, int16_t lower,
-		     int16_t upper, int16_t length)
+	int16_t upper, int16_t length)
 {
 	register int16_t i;
 	int16_t cbegin, ipitch, even_flag;
@@ -262,8 +262,8 @@ int16_t find_pitch(int16_t sig_in[], int16_t * pcorr, int16_t lower,
 
 		/* calculate normalized crosscorrelation */
 		corr =
-		    L_v_inner(&sig_in[cbegin], &sig_in[cbegin + i], length, 0,
-			      0, 1);
+			L_v_inner(&sig_in[cbegin], &sig_in[cbegin + i], length, 0,
+				0, 1);
 
 		/* calculate normalization for numerator and denominator */
 		shift1a = melpe_norm_s(melpe_extract_h(c0_0));
@@ -280,12 +280,12 @@ int16_t find_pitch(int16_t sig_in[], int16_t * pcorr, int16_t lower,
 		} else
 			num = 0;
 		denom = melpe_extract_h(melpe_L_mult(melpe_extract_h(melpe_L_shl(c0_0, shift1a)),
-					 melpe_extract_h(melpe_L_shl(cT_T, shift1b))));
+			melpe_extract_h(melpe_L_shl(cT_T, shift1b))));
 		if (denom < 1)
 			denom = 1;
 
 		if (melpe_L_mult(melpe_extract_l(num), melpe_extract_l(max_denom)) >
-		    melpe_L_mult(melpe_extract_l(max_num), melpe_extract_l(denom))) {
+			melpe_L_mult(melpe_extract_l(max_num), melpe_extract_l(denom))) {
 			max_denom = denom;
 			max_num = num;
 			ipitch = i;
@@ -296,22 +296,22 @@ int16_t find_pitch(int16_t sig_in[], int16_t * pcorr, int16_t lower,
 			even_flag = 0;
 			c0_0 = melpe_L_msu(c0_0, sig_in[cbegin], sig_in[cbegin]);
 			c0_0 = melpe_L_mac(c0_0, sig_in[cbegin + length],
-				     sig_in[cbegin + length]);
+				sig_in[cbegin + length]);
 			cbegin = melpe_add(cbegin, 1);
 		} else {
 			even_flag = 1;
 			cT_T = melpe_L_msu(cT_T, sig_in[cbegin + i - 1 + length],
-				     sig_in[cbegin + i - 1 + length]);
+				sig_in[cbegin + i - 1 + length]);
 			cT_T =
-			    melpe_L_mac(cT_T, sig_in[cbegin + i - 1],
-				  sig_in[cbegin + i - 1]);
+				melpe_L_mac(cT_T, sig_in[cbegin + i - 1],
+					sig_in[cbegin + i - 1]);
 		}
 
 	}
 
 	/* Return pitch value and correlation */
 	*pcorr =
-	    melpe_shr(sqrt_fxp
+		melpe_shr(sqrt_fxp
 		(melpe_divide_s(melpe_extract_l(max_num), melpe_extract_l(max_denom)), 15), 1);
 
 	return (ipitch);
@@ -339,8 +339,8 @@ int16_t find_pitch(int16_t sig_in[], int16_t * pcorr, int16_t lower,
 /* f_pitch_scale().                                                           */
 
 int16_t frac_pch(int16_t sig_in[], int16_t * pcorr, int16_t fpitch,
-		   int16_t range, int16_t pmin, int16_t pmax,
-		   int16_t pmin_q7, int16_t pmax_q7, int16_t lmin)
+	int16_t range, int16_t pmin, int16_t pmax,
+	int16_t pmin_q7, int16_t pmax_q7, int16_t lmin)
 {
 	int16_t length, cbegin, lower, upper, ipitch;
 	int16_t c0_0, c0_T, c0_T1, cT_T, cT_T1, cT1_T1, c0_Tm1;
@@ -351,17 +351,17 @@ int16_t frac_pch(int16_t sig_in[], int16_t * pcorr, int16_t fpitch,
 	int32_t mag_sq;
 	int32_t L_temp1;
 
-	 
-	
+
+
 	/* Perform local integer pitch search for better fpitch estimate */
 	if (range > 0) {
 		ipitch = melpe_shift_r(fpitch, -7);
-		
+
 		if (ipitch >= pmax) {
-		ipitch = melpe_sub(pmax, 1);
-	  }
-		testl=ipitch;
-		
+			ipitch = melpe_sub(pmax, 1);
+		}
+		testl = ipitch;
+
 		lower = melpe_sub(ipitch, range);
 		upper = melpe_add(ipitch, range);
 		if (upper > pmax) {
@@ -374,13 +374,13 @@ int16_t frac_pch(int16_t sig_in[], int16_t * pcorr, int16_t fpitch,
 			lower = melpe_add(melpe_shr(ipitch, 1), melpe_shr(ipitch, 2));
 		}
 		length = ipitch;
-	 
-		
+
+
 		if (length < lmin) {
 			length = lmin;
 		}
 		fpitch =
-		    melpe_shl(find_pitch(sig_in, &corr, lower, upper, length), 7);
+			melpe_shl(find_pitch(sig_in, &corr, lower, upper, length), 7);
 	}
 
 	/* Estimate needed crosscorrelations */
@@ -398,7 +398,7 @@ int16_t frac_pch(int16_t sig_in[], int16_t * pcorr, int16_t fpitch,
 	mag_sq = L_v_magsq(&sig_in[cbegin], length, 0, 1);
 	shift1a = melpe_norm_s(melpe_extract_h(mag_sq));
 	shift1b = melpe_norm_s(melpe_extract_h(L_v_magsq(&sig_in[cbegin + ipitch - 1],
-					     (int16_t) (length + 2), 0, 1)));
+		(int16_t)(length + 2), 0, 1)));
 	shift = melpe_add(shift1a, shift1b);
 	shift2 = melpe_shr(shift, 1);	/* shift2 = half of total shift */
 	if (melpe_shl(shift2, 1) != shift)
@@ -408,19 +408,19 @@ int16_t frac_pch(int16_t sig_in[], int16_t * pcorr, int16_t fpitch,
 	c0_0 = melpe_extract_h(melpe_L_shl(mag_sq, shift1a));
 
 	c0_T =
-	    melpe_extract_h(melpe_L_shl
-		      (L_v_inner
-		       (&sig_in[cbegin], &sig_in[cbegin + ipitch], length, 0, 0,
+		melpe_extract_h(melpe_L_shl
+		(L_v_inner
+		(&sig_in[cbegin], &sig_in[cbegin + ipitch], length, 0, 0,
 			1), shift2));
 	c0_T1 =
-	    melpe_extract_h(melpe_L_shl
-		      (L_v_inner
-		       (&sig_in[cbegin], &sig_in[cbegin + ipitch + 1], length,
+		melpe_extract_h(melpe_L_shl
+		(L_v_inner
+		(&sig_in[cbegin], &sig_in[cbegin + ipitch + 1], length,
 			0, 0, 1), shift2));
 	c0_Tm1 =
-	    melpe_extract_h(melpe_L_shl
-		      (L_v_inner
-		       (&sig_in[cbegin], &sig_in[cbegin + ipitch - 1], length,
+		melpe_extract_h(melpe_L_shl
+		(L_v_inner
+		(&sig_in[cbegin], &sig_in[cbegin + ipitch - 1], length,
 			0, 0, 1), shift2));
 
 	if (c0_Tm1 > c0_T1) {
@@ -430,27 +430,27 @@ int16_t frac_pch(int16_t sig_in[], int16_t * pcorr, int16_t fpitch,
 		ipitch = melpe_sub(ipitch, 1);
 	}
 	cT_T1 = melpe_extract_h(melpe_L_shl(L_v_inner(&sig_in[cbegin + ipitch],
-					  &sig_in[cbegin + ipitch + 1], length,
-					  0, 0, 1), shift1b));
+		&sig_in[cbegin + ipitch + 1], length,
+		0, 0, 1), shift1b));
 	cT_T = melpe_extract_h(melpe_L_shl(L_v_inner(&sig_in[cbegin + ipitch],
-					 &sig_in[cbegin + ipitch], length,
-					 0, 0, 1), shift1b));
+		&sig_in[cbegin + ipitch], length,
+		0, 0, 1), shift1b));
 	cT1_T1 = melpe_extract_h(melpe_L_shl(L_v_inner(&sig_in[cbegin + ipitch + 1],
-					   &sig_in[cbegin + ipitch + 1], length,
-					   0, 0, 1), shift1b));
+		&sig_in[cbegin + ipitch + 1], length,
+		0, 0, 1), shift1b));
 
 	/* Find fractional component of pitch within integer range */
 	/* frac = Q13 */
 	denom = melpe_L_add(melpe_L_mult(c0_T1, melpe_sub(melpe_shr(cT_T, 1), melpe_shr(cT_T1, 1))),
-		      melpe_L_mult(c0_T, melpe_sub(melpe_shr(cT1_T1, 1), melpe_shr(cT_T1, 1))));
+		melpe_L_mult(c0_T, melpe_sub(melpe_shr(cT1_T1, 1), melpe_shr(cT_T1, 1))));
 	numer = melpe_L_sub(melpe_L_shr(melpe_L_mult(c0_T1, cT_T), 1),
-		      melpe_L_shr(melpe_L_mult(c0_T, cT_T1), 1));
+		melpe_L_shr(melpe_L_mult(c0_T, cT_T1), 1));
 
 	L_temp1 = melpe_L_abs(denom);
 	if (L_temp1 > 0) {
 		if (melpe_L_abs(melpe_L_shr(numer, 2)) > L_temp1) {
 			if (((numer > 0) && (denom < 0))
-			    || ((numer < 0) && (denom > 0)))
+				|| ((numer < 0) && (denom > 0)))
 				frac = MINFRAC;
 			else
 				frac = MAXFRAC;
@@ -580,8 +580,8 @@ int16_t p_avg_update(int16_t pitch, int16_t pcorr, int16_t pthresh)
 /*      speech - Q0, resid - Q0, pitch_est - Q7, pitch_avg - Q7, pcorr2 - Q14 */
 
 int16_t pitch_ana(int16_t speech[], int16_t resid[],
-		    int16_t pitch_est, int16_t pitch_avg,
-		    int16_t * pcorr2)
+	int16_t pitch_est, int16_t pitch_avg,
+	int16_t * pcorr2)
 {
 	register int16_t i, section;
 	static int16_t lpres_delin[LPF_ORD];
@@ -603,22 +603,22 @@ int16_t pitch_ana(int16_t speech[], int16_t resid[],
 
 	for (section = 0; section < LPF_ORD / 2; section++) {
 		iir_2nd_s(&sigbuf[LPF_ORD_SOS], &lpf_den[section * 3],
-			  &lpf_num[section * 3], &sigbuf[LPF_ORD_SOS],
-			  &lpres_delin[section * 2], &lpres_delout[section * 2],
-			  FRAME);
+			&lpf_num[section * 3], &sigbuf[LPF_ORD_SOS],
+			&lpres_delin[section * 2], &lpres_delout[section * 2],
+			FRAME);
 		/* save delay buffers for the next overlapping frame */
-		for (i = (int16_t) (section * 2);
-		     i < (int16_t) (section * 2 + 2); i++) {
+		for (i = (int16_t)(section * 2);
+			i < (int16_t)(section * 2 + 2); i++) {
 			temp_delin[i] = lpres_delin[i];
 			temp_delout[i] = lpres_delout[i];
 		}
 		iir_2nd_s(&sigbuf[LPF_ORD_SOS + FRAME], &lpf_den[section * 3],
-			  &lpf_num[section * 3], &sigbuf[LPF_ORD_SOS + FRAME],
-			  &lpres_delin[section * 2], &lpres_delout[section * 2],
-			  PITCH_FR - FRAME);
+			&lpf_num[section * 3], &sigbuf[LPF_ORD_SOS + FRAME],
+			&lpres_delin[section * 2], &lpres_delout[section * 2],
+			PITCH_FR - FRAME);
 		/* restore delay buffers for the next overlapping frame */
-		for (i = (int16_t) (section * 2);
-		     i < (int16_t) (section * 2 + 2); i++) {
+		for (i = (int16_t)(section * 2);
+			i < (int16_t)(section * 2 + 2); i++) {
 			lpres_delin[i] = temp_delin[i];
 			lpres_delout[i] = temp_delout[i];
 		}
@@ -629,9 +629,9 @@ int16_t pitch_ana(int16_t speech[], int16_t resid[],
 
 	/* Perform local search ar_ound pitch estimate */
 	temp =
-	    frac_pch(&sigbuf[LPF_ORD_SOS + (PITCH_FR / 2)], &pcorr, pitch_est,
-		     5, PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
-		     MINLENGTH);
+		frac_pch(&sigbuf[LPF_ORD_SOS + (PITCH_FR / 2)], &pcorr, pitch_est,
+			5, PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
+			MINLENGTH);
 
 	if (pcorr < PCORR_THR) {
 
@@ -640,12 +640,12 @@ int16_t pitch_ana(int16_t speech[], int16_t resid[],
 
 		/* Scale speech for pitch correlations */
 		f_pitch_scale(&sigbuf[LPF_ORD_SOS], &sigbuf[LPF_ORD_SOS],
-			      PITCH_FR);
+			PITCH_FR);
 
 		temp =
-		    frac_pch(&sigbuf[LPF_ORD + (PITCH_FR / 2)], &pcorr,
-			     pitch_est, 0, PITCHMIN, PITCHMAX, PITCHMIN_Q7,
-			     PITCHMAX_Q7, MINLENGTH);
+			frac_pch(&sigbuf[LPF_ORD + (PITCH_FR / 2)], &pcorr,
+				pitch_est, 0, PITCHMIN, PITCHMAX, PITCHMIN_Q7,
+				PITCHMAX_Q7, MINLENGTH);
 
 		if (pcorr < UVMAX)	/* If correlation still too low, use average pitch */
 			pitch = pitch_avg;
@@ -658,9 +658,9 @@ int16_t pitch_ana(int16_t speech[], int16_t resid[],
 			else
 				temp2 = PDOUBLE3;
 			pitch =
-			    double_chk(&sigbuf[LPF_ORD + (PITCH_FR / 2)],
-				       &pcorr, temp, temp2, PITCHMIN, PITCHMAX,
-				       PITCHMIN_Q7, PITCHMAX_Q7, MINLENGTH);
+				double_chk(&sigbuf[LPF_ORD + (PITCH_FR / 2)],
+					&pcorr, temp, temp2, PITCHMIN, PITCHMAX,
+					PITCHMIN_Q7, PITCHMAX_Q7, MINLENGTH);
 		}
 	} else {
 
@@ -672,8 +672,8 @@ int16_t pitch_ana(int16_t speech[], int16_t resid[],
 		else
 			temp2 = PDOUBLE1;
 		pitch = double_chk(&sigbuf[LPF_ORD + (PITCH_FR / 2)], &pcorr,
-				   temp, temp2, PITCHMIN, PITCHMAX, PITCHMIN_Q7,
-				   PITCHMAX_Q7, MINLENGTH);
+			temp, temp2, PITCHMIN, PITCHMAX, PITCHMIN_Q7,
+			PITCHMAX_Q7, MINLENGTH);
 	}
 
 	if (pcorr < UVMAX)	/* If correlation still too low, use average pitch */

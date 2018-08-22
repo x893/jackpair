@@ -41,15 +41,60 @@
 
 /* Private define ------------------------------------------------------------*/
 
-#define USART_TX_Pin GPIO_PIN_2
-#define USART_TX_GPIO_Port GPIOA
-#define USART_RX_Pin GPIO_PIN_3
-#define USART_RX_GPIO_Port GPIOA
-#define TMS_Pin GPIO_PIN_13
-#define TMS_GPIO_Port GPIOA
-#define TCK_Pin GPIO_PIN_14
-#define TCK_GPIO_Port GPIOA
+#define USART_TX_Pin		GPIO_PIN_2
+#define USART_TX_GPIO_Port	GPIOA
+#define USART_RX_Pin		GPIO_PIN_3
+#define USART_RX_GPIO_Port	GPIOA
+#define TMS_Pin				GPIO_PIN_13
+#define TMS_GPIO_Port		GPIOA
+#define TCK_Pin				GPIO_PIN_14
+#define TCK_GPIO_Port		GPIOA
 /* USER CODE BEGIN Private defines */
+
+#define USART_TX_PIN		GPIOA, GPIO_PIN_2
+#define USART_RX_PIN		GPIOA, GPIO_PIN_3
+
+#define FIRST(a,b)			a
+#define SECOND(a,b)			b
+#define PIN(a)				SECOND(a)
+#define PORT(a)				FIRST(a)
+
+#define KEY_0_PIN			GPIOC, GPIO_PIN_7
+#define KEY_1_PIN			GPIOB, GPIO_PIN_2
+#define KEY_2_PIN			GPIOA, GPIO_PIN_8
+#define KEY_3_PIN			GPIOB, GPIO_PIN_15
+#define KEY_4_PIN			GPIOB, GPIO_PIN_4
+#define KEY_5_PIN			GPIOB, GPIO_PIN_13
+#define KEY_6_PIN			GPIOB, GPIO_PIN_3
+#define KEY_7_PIN			GPIOC, GPIO_PIN_4
+
+#define KEY_G0_0			GPIOA, GPIO_PIN_9
+#define KEY_G0_1			GPIOB, GPIO_PIN_5
+
+#define KEY_G1_0			GPIOA, GPIO_PIN_10
+#define KEY_G1_1			GPIOB, GPIO_PIN_10
+
+#define KEY_G2_0			GPIOB, GPIO_PIN_1
+#define KEY_G2_1			GPIOB, GPIO_PIN_14
+
+#define TX_LED_PIN			GPIOA, GPIO_PIN_7
+#define TX_LED_GND_PIN		GPIOB, GPIO_PIN_6
+
+#define RX_LED_PIN			GPIOB, GPIO_PIN_9
+#define RX_LED_GND_PIN		GPIOB, GPIO_PIN_8
+
+#define MIC_PIN				GPIOA, GPIO_PIN_0
+#define LINE_IN_PIN			GPIOA, GPIO_PIN_1
+#define BAT_PIN				GPIOC, GPIO_PIN_0
+#define SPEAKER_PIN			GPIOA, GPIO_PIN_4
+#define LINE_OUT_PIN		GPIOA, GPIO_PIN_5
+
+#define BUTTON_PIN			GPIOC, GPIO_PIN_13
+#define PSK_PIN				GPIOC, GPIO_PIN_8
+#define PSK_GND_PIN			GPIOC, GPIO_PIN_9
+#define ANTIVAD_PIN			GPIOC, GPIO_PIN_6
+#define PTT_PIN				GPIOA, GPIO_PIN_11
+#define PTT_GND_PIN			GPIOA, GPIO_PIN_6
 
 /* USER CODE END Private defines */
 

@@ -42,22 +42,22 @@
 
 /* ------ Local prototypes ------ */
 static void wvq1(int16_t target[], int16_t weights[],
-		 const int16_t codebook[], int16_t dim,
-		 int16_t cbsize, int16_t index[], int32_t dist[],
-		 int16_t cand);
+	const int16_t codebook[], int16_t dim,
+	int16_t cbsize, int16_t index[], int32_t dist[],
+	int16_t cand);
 static int16_t InsertCand(int16_t c1, int16_t s1, int16_t dMin[],
-			    int16_t distortion, int16_t entry,
-			    int16_t nextIndex[], int16_t index[]);
+	int16_t distortion, int16_t entry,
+	int16_t nextIndex[], int16_t index[]);
 static int16_t wvq2(int16_t target[], int16_t weights[],
-		      int16_t codebook[], int16_t dim,
-		      int16_t index[], int32_t dist[], int16_t cand);
+	int16_t codebook[], int16_t dim,
+	int16_t index[], int32_t dist[], int16_t cand);
 static int16_t WeightedMSE(int16_t n, int16_t weight[],
-			     const int16_t x[], int16_t target[],
-			     int16_t max_dMin);
+	const int16_t x[], int16_t target[],
+	int16_t max_dMin);
 static void lspVQ(int16_t target[], int16_t weight[], int16_t qout[],
-		  const int16_t codebook[], int16_t tos,
-		  const int16_t cb_size[], int16_t cb_index[],
-		  int16_t dim, BOOLEAN flag);
+	const int16_t codebook[], int16_t tos,
+	const int16_t cb_size[], int16_t cb_index[],
+	int16_t dim, BOOLEAN flag);
 
 /****************************************************************************
 **
@@ -130,8 +130,8 @@ void pitch_vq(struct melp_param *par)
 					PIT_QLO_Q12, PIT_QUP_Q12, PIT_QLEV_M1,
 					PIT_QLEV_M1_Q8, TRUE, 7);
 				quant_u_dec(quant_par.pitch_index,
-					    &par[i].pitch, PIT_QLO_Q12,
-					    PIT_QUP_Q12, PIT_QLEV_M1_Q8, 7);
+					&par[i].pitch, PIT_QLO_Q12,
+					PIT_QUP_Q12, PIT_QLEV_M1_Q8, 7);
 			} else
 				par[i].pitch = LOG_UV_PITCH_Q12;
 		}
@@ -145,7 +145,7 @@ void pitch_vq(struct melp_param *par)
 			par[i].pitch = pow10_fxp(par[i].pitch, 7);	/* Q7 */
 
 	} else if (cnt > 1) {	/* cnt == 2, 3, ......, (NF - 1) */
-		/* ----- set pointer ----- */
+	 /* ----- set pointer ----- */
 		if (cnt == NF) {	/* All NF frames are voiced. */
 			codebook = pitch_vq_cb_vvv;
 			size = PITCH_VQ_LEVEL_VVV;
@@ -156,7 +156,7 @@ void pitch_vq(struct melp_param *par)
 
 		/* ---- select candidate using static pitch distortion ---- */
 		wvq1(target, weights, codebook, NF, size, indexlist, distlist,
-		     PITCH_VQ_CAND);
+			PITCH_VQ_CAND);
 
 		/* -- select index using static and delta pitch distortion -- */
 		temp1 = 0;
@@ -174,7 +174,7 @@ void pitch_vq(struct melp_param *par)
 		}
 
 		pitch_index = wvq2(deltp, deltw, dcb, NF, indexlist, distlist,
-				   PITCH_VQ_CAND);
+			PITCH_VQ_CAND);
 
 		if (par[NF - 1].uv_flag)
 			prev_qpitch = LOG_UV_PITCH_Q12;
@@ -186,8 +186,8 @@ void pitch_vq(struct melp_param *par)
 				par[i].pitch = UV_PITCH_Q7;
 			else
 				par[i].pitch =
-				    pow10_fxp(codebook[pitch_index * NF + i],
-					      7);
+				pow10_fxp(codebook[pitch_index * NF + i],
+					7);
 		}
 
 		quant_par.pitch_index = pitch_index;
@@ -219,9 +219,9 @@ void pitch_vq(struct melp_param *par)
 **
 *****************************************************************************/
 static void wvq1(int16_t target[], int16_t weights[],
-		 const int16_t codebook[], int16_t dim,
-		 int16_t cbsize, int16_t index[], int32_t dist[],
-		 int16_t cand)
+	const int16_t codebook[], int16_t dim,
+	int16_t cbsize, int16_t index[], int32_t dist[],
+	int16_t cand)
 {
 	register int16_t i, j;
 	int16_t maxindex;
@@ -300,8 +300,8 @@ static void wvq1(int16_t target[], int16_t weights[],
 **
 *****************************************************************************/
 static int16_t wvq2(int16_t target[], int16_t weights[],
-		      int16_t codebook[], int16_t dim,
-		      int16_t index[], int32_t dist[], int16_t cand)
+	int16_t codebook[], int16_t dim,
+	int16_t index[], int32_t dist[], int16_t cand)
 {
 	register int16_t i, j;
 	int16_t ind;
@@ -450,7 +450,7 @@ void quant_bp(struct melp_param *par, int16_t num_frames)
 
 	for (i = 0; i < num_frames; i++) {
 		par[i].uv_flag = q_bpvc(par[i].bpvc, &(quant_par.bpvc_index[i]),
-					NUM_BANDS);
+			NUM_BANDS);
 		quant_par.bpvc_index[i] = bp_index_map[quant_par.bpvc_index[i]];
 	}
 }
@@ -480,9 +480,9 @@ void quant_bp(struct melp_param *par, int16_t num_frames)
 **
 ***********************************************************************/
 static void lspVQ(int16_t target[], int16_t weight[], int16_t qout[],
-		  const int16_t codebook[], int16_t tos,
-		  const int16_t cb_size[], int16_t cb_index[],
-		  int16_t dim, BOOLEAN flag)
+	const int16_t codebook[], int16_t tos,
+	const int16_t cb_size[], int16_t cb_index[],
+	int16_t dim, BOOLEAN flag)
 {
 	register int16_t i, entry;
 	register int16_t c1, s1;
@@ -549,7 +549,7 @@ static void lspVQ(int16_t target[], int16_t weight[], int16_t qout[],
 
 				/* compute the distortion */
 				distortion =
-				    WeightedMSE(dim, weight, ptr1, cand_target,
+					WeightedMSE(dim, weight, ptr1, cand_target,
 						max_dMin);
 
 				/*======================================================*
@@ -559,9 +559,9 @@ static void lspVQ(int16_t target[], int16_t weight[], int16_t qout[],
 				*=======================================================*/
 				if (distortion < max_dMin) {
 					max_dMin =
-					    InsertCand(c1, s1, dMin, distortion,
-						       entry, nextIndex[0],
-						       index[0]);
+						InsertCand(c1, s1, dMin, distortion,
+							entry, nextIndex[0],
+							index[0]);
 				}
 				ptr_offset = melpe_add(ptr_offset, dim);
 			}
@@ -667,8 +667,8 @@ static void lspVQ(int16_t target[], int16_t weight[], int16_t qout[],
 **
 ***********************************************************************/
 static int16_t WeightedMSE(int16_t n, int16_t weight[],
-			     const int16_t x[], int16_t target[],
-			     int16_t max_dMin)
+	const int16_t x[], int16_t target[],
+	int16_t max_dMin)
 {
 	register int16_t i;
 	int32_t distortion;
@@ -733,8 +733,8 @@ static int16_t WeightedMSE(int16_t n, int16_t weight[],
 **
 ***********************************************************************/
 static int16_t InsertCand(int16_t c1, int16_t s1, int16_t dMin[],
-			    int16_t distortion, int16_t entry,
-			    int16_t nextIndex[], int16_t index[])
+	int16_t distortion, int16_t entry,
+	int16_t nextIndex[], int16_t index[])
 {
 	register int16_t i, j;
 	int16_t ptr_offset;
@@ -748,7 +748,8 @@ static int16_t InsertCand(int16_t c1, int16_t s1, int16_t dMin[],
 	*	verified that this error falls in the range of the candidate	*
 	*	errors. 														*
 	*==================================================================*/
-	for (i = 0; (i < LSP_VQ_CAND) && (distortion > dMin[i]); i++) ;
+	for (i = 0; (i < LSP_VQ_CAND) && (distortion > dMin[i]); i++)
+		;
 
 	/* shift the distortions and indices down to make room for the new one */
 	/*      ptr_offset = (LSP_VQ_CAND - 1) * vq_stages; */
@@ -956,46 +957,46 @@ void lsf_vq(struct melp_param *par)
 	switch (uv_config) {
 	case 7:		/* 111, all frames are NOT voiced ---- */
 		lspVQ(lsp[0], wgt[0], lsp[0], lsp_uv_9, 1, melp_uv_cb_size,
-		      quant_par.lsf_index[0], LPC_ORD, FALSE);
+			quant_par.lsf_index[0], LPC_ORD, FALSE);
 		lspVQ(lsp[1], wgt[1], lsp[1], lsp_uv_9, 1, melp_uv_cb_size,
-		      quant_par.lsf_index[1], LPC_ORD, FALSE);
+			quant_par.lsf_index[1], LPC_ORD, FALSE);
 		lspVQ(lsp[2], wgt[2], lsp[2], lsp_uv_9, 1, melp_uv_cb_size,
-		      quant_par.lsf_index[2], LPC_ORD, FALSE);
+			quant_par.lsf_index[2], LPC_ORD, FALSE);
 		break;
 	case 6:		/* 110 */
 		lspVQ(lsp[0], wgt[0], lsp[0], lsp_uv_9, 1, melp_uv_cb_size,
-		      quant_par.lsf_index[0], LPC_ORD, FALSE);
+			quant_par.lsf_index[0], LPC_ORD, FALSE);
 		lspVQ(lsp[1], wgt[1], lsp[1], lsp_uv_9, 1, melp_uv_cb_size,
-		      quant_par.lsf_index[1], LPC_ORD, FALSE);
+			quant_par.lsf_index[1], LPC_ORD, FALSE);
 		lspVQ(lsp[2], wgt[2], lsp[2], lsp_v_256x64x32x32, 4, melp_cb_size,	/* !!! (12/15/99) */
-		      quant_par.lsf_index[2], LPC_ORD, FALSE);
+			quant_par.lsf_index[2], LPC_ORD, FALSE);
 		break;
 	case 5:		/* 101 */
 		lspVQ(lsp[0], wgt[0], lsp[0], lsp_uv_9, 1, melp_uv_cb_size,
-		      quant_par.lsf_index[0], LPC_ORD, FALSE);
+			quant_par.lsf_index[0], LPC_ORD, FALSE);
 		lspVQ(lsp[1], wgt[1], lsp[1], lsp_v_256x64x32x32, 4, melp_cb_size,	/* !!! (12/15/99) */
-		      quant_par.lsf_index[1], LPC_ORD, FALSE);
+			quant_par.lsf_index[1], LPC_ORD, FALSE);
 		lspVQ(lsp[2], wgt[2], lsp[2], lsp_uv_9, 1, melp_uv_cb_size,
-		      quant_par.lsf_index[2], LPC_ORD, FALSE);
+			quant_par.lsf_index[2], LPC_ORD, FALSE);
 		break;
 	case 3:		/* 011 */
 		lspVQ(lsp[0], wgt[0], lsp[0], lsp_v_256x64x32x32, 4, melp_cb_size,	/* !!! (12/15/99) */
-		      quant_par.lsf_index[0], LPC_ORD, FALSE);
+			quant_par.lsf_index[0], LPC_ORD, FALSE);
 		lspVQ(lsp[1], wgt[1], lsp[1], lsp_uv_9, 1, melp_uv_cb_size,
-		      quant_par.lsf_index[1], LPC_ORD, FALSE);
+			quant_par.lsf_index[1], LPC_ORD, FALSE);
 		lspVQ(lsp[2], wgt[2], lsp[2], lsp_uv_9, 1, melp_uv_cb_size,
-		      quant_par.lsf_index[2], LPC_ORD, FALSE);
+			quant_par.lsf_index[2], LPC_ORD, FALSE);
 		break;
 	default:
 		if (uv_config == 1) {	/* 001 case, if (!uv1 && !uv2 && uv3). */
 			/* ---- Interpolation [4 inp + (8+6+6+6) res + 9 uv] ---- */
 			tos = 1;
 			lspVQ(lsp[2], wgt[2], lsp_cand[0], lsp_uv_9, tos,
-			      melp_uv_cb_size, lsp_index_cand, LPC_ORD, TRUE);
+				melp_uv_cb_size, lsp_index_cand, LPC_ORD, TRUE);
 		} else {
 			tos = 4;
 			lspVQ(lsp[2], wgt[2], lsp_cand[0], lsp_v_256x64x32x32, tos,	/* !!! (12/15/99) */
-			      melp_cb_size, lsp_index_cand, LPC_ORD, TRUE);
+				melp_cb_size, lsp_index_cand, LPC_ORD, TRUE);
 		}
 
 		minErr = LW_MAX;
@@ -1022,9 +1023,9 @@ void lsf_vq(struct melp_param *par)
 					acc = melpe_L_mac(acc, intfact, lsp_cand[k][j]);	/* Q30 */
 					ilsp0[j] = melpe_extract_h(melpe_L_shl(acc, 1));
 					acc =
-					    melpe_L_sub(acc,
-						  melpe_L_shl(melpe_L_deposit_l(lsp[0][j]),
-							15));
+						melpe_L_sub(acc,
+							melpe_L_shl(melpe_L_deposit_l(lsp[0][j]),
+								15));
 
 					/*      ilsp1[j] = inpCoef[i][j + LPC_ORD] * qplsp[j] +
 					   (1.0 - inpCoef[i][j + LPC_ORD]) * lsp_cand[k][j]; */
@@ -1034,9 +1035,9 @@ void lsf_vq(struct melp_param *par)
 					bcc = melpe_L_mac(bcc, intfact, lsp_cand[k][j]);	/* Q30 */
 					ilsp1[j] = melpe_extract_h(melpe_L_shl(bcc, 1));
 					bcc =
-					    melpe_L_sub(bcc,
-						  melpe_L_shl(melpe_L_deposit_l(lsp[1][j]),
-							15));
+						melpe_L_sub(bcc,
+							melpe_L_shl(melpe_L_deposit_l(lsp[1][j]),
+								15));
 
 					/*      err += wgt0[j]*(lsp0[j] - ilsp0[j])*
 					   (lsp0[j] - ilsp0[j]); */
@@ -1065,8 +1066,8 @@ void lsf_vq(struct melp_param *par)
 					/* computer the err for the last frame */
 					acc = melpe_L_shl(melpe_L_deposit_l(lsp[2][j]), 15);
 					acc =
-					    melpe_L_sub(acc,
-						  melpe_L_shl(melpe_L_deposit_l
+						melpe_L_sub(acc,
+							melpe_L_shl(melpe_L_deposit_l
 							(lsp_cand[k][j]), 15));
 					temp1 = melpe_norm_l(acc);
 					temp2 = melpe_extract_h(melpe_L_shl(acc, temp1));
@@ -1091,7 +1092,7 @@ void lsf_vq(struct melp_param *par)
 
 		v_equ(lsp[2], lsp_cand[cand], LPC_ORD);
 		v_equ(quant_par.lsf_index[0], &(lsp_index_cand[cand * tos]),
-		      tos);
+			tos);
 		quant_par.lsf_index[1][0] = inp_index_cand;
 
 		for (i = 0; i < LPC_ORD; i++) {
@@ -1109,10 +1110,10 @@ void lsf_vq(struct melp_param *par)
 
 		if (uv_config == 1)	/* if (!uv1 && !uv2 && uv3) */
 			lspVQ(res, mwgt, res, res256x64x64x64, 4, res_cb_size,
-			      quant_par.lsf_index[2], 2 * LPC_ORD, FALSE);
+				quant_par.lsf_index[2], 2 * LPC_ORD, FALSE);
 		else
 			lspVQ(res, mwgt, res, res256x64x64x64, 2, res_cb_size,
-			      quant_par.lsf_index[2], 2 * LPC_ORD, FALSE);
+				quant_par.lsf_index[2], 2 * LPC_ORD, FALSE);
 
 		/* ---- reconstruct lsp for later stability check ---- */
 		for (i = 0; i < LPC_ORD; i++) {
@@ -1156,7 +1157,7 @@ void lsf_vq(struct melp_param *par)
 **
 ***********************************************************************/
 void deqnt_msvq(int16_t qout[], const int16_t codebook[], int16_t tos,
-		const int16_t cb_size[], int16_t index[], int16_t dim)
+	const int16_t cb_size[], int16_t index[], int16_t dim)
 {
 	register int16_t i;
 	const int16_t *cdbk_ptr;
@@ -1291,7 +1292,7 @@ void quant_fsmag(struct melp_param *par)
 			fill(par[i].fs_mag, ONE_Q13, NUM_HARM);
 		else {
 			window_Q(par[i].fs_mag, w_fs, par[i].fs_mag, NUM_HARM,
-				 14);
+				14);
 			last = i;
 			count++;
 		}
@@ -1304,7 +1305,7 @@ void quant_fsmag(struct melp_param *par)
 
 	if (count > 0)
 		vq_enc(fsvq_cb, par[last].fs_mag, FS_LEVELS, NUM_HARM, qmag,
-		       &quant_par.fs_index);
+			&quant_par.fs_index);
 
 	if (count > 1) {
 		if (prev_uv || par[0].uv_flag) {

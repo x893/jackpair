@@ -60,7 +60,7 @@ Secretariat fax: +33 493 65 47 16.
 /*  pitch - Q7                                                  */
 
 void find_harm(int16_t input[], int16_t fsmag[], int16_t pitch,
-	       int16_t num_harm, int16_t length)
+	int16_t num_harm, int16_t length)
 {
 	register int16_t i, j, k;
 	int16_t find_hbuf[2 * FFTLENGTH];
@@ -129,7 +129,7 @@ void find_harm(int16_t input[], int16_t fsmag[], int16_t pitch,
 			temp1 = find_hbuf[2 * temp2];
 			temp2 = find_hbuf[2 * temp2 + 1];
 			L_temp =
-			    melpe_L_add(melpe_L_mult(temp1, temp1), melpe_L_mult(temp2, temp2));
+				melpe_L_add(melpe_L_mult(temp1, temp1), melpe_L_mult(temp2, temp2));
 			L_max = Max(L_max, L_temp);
 		}
 
@@ -141,14 +141,14 @@ void find_harm(int16_t input[], int16_t fsmag[], int16_t pitch,
 	avg = 1;
 	for (k = 0; k < num_harm; k++)
 		avg = melpe_L40_add(avg, L_fsmag[k]);
-	
+
 	//------------------------------------------------------
-  avg=melpe_L40_satup(avg);
-  avg=melpe_L40_satdown(avg);	
-//------------------------------------------------------	
-	
+	avg = melpe_L40_satup(avg);
+	avg = melpe_L40_satdown(avg);
+	//------------------------------------------------------	
+
 	temp1 = melpe_norm32(avg);
-	L_temp = (int32_t) melpe_L40_shl(avg, temp1);	/* man. of avg */
+	L_temp = (int32_t)melpe_L40_shl(avg, temp1);	/* man. of avg */
 	temp1 = melpe_sub(31, temp1);	/* exp. of avg */
 	/* now compute num_harm/avg. avg = L_temp(Q31) x 2^temp1 */
 	temp2 = melpe_shl(num_harm, 10);

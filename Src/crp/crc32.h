@@ -1,5 +1,11 @@
-void crc32_init( void );
-void crc32_update( unsigned char *blk_adr, unsigned long blk_len );
-unsigned long crc32_value( void );
+#ifndef __CRC32_H__
+#define __CRC32_H__
 
-unsigned long crc32( unsigned char *blk_adr, unsigned long blk_len );
+#include <stdint.h>
+
+// void crc32_init( void );
+// void crc32_update( uint8_t *blk_adr, int16_t blk_len );
+uint32_t crc32( uint8_t *blk_adr, int16_t blk_len );
+// uint32_t crc32_value( void );
+
+#endif

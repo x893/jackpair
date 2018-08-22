@@ -352,7 +352,7 @@ static void hpf60(int16_t speech[])
 	static int16_t hpf60_delout_lo[2] = { 0, 0 };
 
 	iir_2nd_d(speech, hpf60_den, hpf60_num, speech, hpf60_delin,
-		  hpf60_delout_hi, hpf60_delout_lo, FRAME);
+		hpf60_delout_hi, hpf60_delout_lo, FRAME);
 }
 
 /* Refer to the comment for hpf60(), this filter can be rewritten as          */
@@ -378,5 +378,5 @@ static void lpf3500(int16_t speech[])
 	static int16_t lpf3500_delout_lo[2] = { 0, 0 };
 
 	iir_2nd_d(speech, lpf3500_den, lpf3500_num, speech, lpf3500_delin,
-		  lpf3500_delout_hi, lpf3500_delout_lo, FRAME);
+		lpf3500_delout_hi, lpf3500_delout_lo, FRAME);
 }

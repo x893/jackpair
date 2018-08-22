@@ -190,53 +190,53 @@ KeccakP800_StaticInitialize   PROC
 ; 
 ;  void  KeccakP800_Initialize(void *state)
 ; 
-    ALIGN
-    EXPORT   KeccakP800_Initialize
-KeccakP800_Initialize   PROC
-    push    {r4 - r5}
-    movs    r1, #0
-    movs    r2, #0
-    movs    r3, #0
-    movs    r4, #0
-    movs    r5, #0
-    stmia   r0!, { r1 - r5 }
-    stmia   r0!, { r1 - r5 }
-    stmia   r0!, { r1 - r5 }
-    stmia   r0!, { r1 - r5 }
-    stmia   r0!, { r1 - r5 }
-    pop     {r4 - r5}
-    bx      lr
-    ENDP
+	ALIGN
+	EXPORT   KeccakP800_Initialize
+KeccakP800_Initialize	PROC
+	push    {r4 - r5}
+	movs    r1, #0
+	movs    r2, #0
+	movs    r3, #0
+	movs    r4, #0
+	movs    r5, #0
+	stmia   r0!, { r1 - r5 }
+	stmia   r0!, { r1 - r5 }
+	stmia   r0!, { r1 - r5 }
+	stmia   r0!, { r1 - r5 }
+	stmia   r0!, { r1 - r5 }
+	pop     {r4 - r5}
+	bx      lr
+	ENDP
 
 ; ----------------------------------------------------------------------------
 ; 
 ;  void KeccakP800_AddByte(void *state, unsigned char byte, unsigned int offset)
 ; 
-    ALIGN
-    EXPORT  KeccakP800_AddByte
-KeccakP800_AddByte   PROC
-    adds    r0, r0, r2                              ; state += offset
-    ldrb    r2, [r0]
-    eors    r2, r2, r1
-    strb    r2, [r0]
-    bx      lr
-    ENDP
+	ALIGN
+	EXPORT  KeccakP800_AddByte
+KeccakP800_AddByte	PROC
+	adds    r0, r0, r2                              ; state += offset
+	ldrb    r2, [r0]
+	eors    r2, r2, r1
+	strb    r2, [r0]
+	bx      lr
+	ENDP
 
 ; ----------------------------------------------------------------------------
 ; 
 ;  void KeccakP800_AddBytes(void *state, const unsigned char *data, unsigned int offset, unsigned int length)
 ; 
-    ALIGN
-    EXPORT  KeccakP800_AddBytes
+	ALIGN
+	EXPORT  KeccakP800_AddBytes
 KeccakP800_AddBytes   PROC
-    push    {r4,lr}
-    adds    r0, r0, r2                              ; state += offset
-    subs    r3, r3, #4                              ; if length >= 4
-    bcc     KeccakP800_AddBytes_Bytes
-    movs    r2, r0                                  ; and data pointer and offset both 32-bit aligned
-    orrs    r2, r2, r1
-    lsls    r2, #30
-    bne     KeccakP800_AddBytes_Bytes
+	push    {r4,lr}
+	adds    r0, r0, r2                              ; state += offset
+	subs    r3, r3, #4                              ; if length >= 4
+	bcc     KeccakP800_AddBytes_Bytes
+	movs    r2, r0                                  ; and data pointer and offset both 32-bit aligned
+	orrs    r2, r2, r1
+	lsls    r2, #30
+	bne     KeccakP800_AddBytes_Bytes
 KeccakP800_AddBytes_LanesLoop                   ; then, perform on words
     ldr     r2, [r0]
     ldmia   r1!, {r4}

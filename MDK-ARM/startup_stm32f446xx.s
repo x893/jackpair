@@ -43,7 +43,7 @@
 ;   <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
 ; </h>
 
-Stack_Size		EQU     0x8000
+Stack_Size		EQU     0x1000
 
                 AREA    STACK, NOINIT, READWRITE, ALIGN=3
 Stack_Mem       SPACE   Stack_Size
@@ -54,7 +54,7 @@ __initial_sp
 ;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
 ; </h>
 
-Heap_Size      EQU     0xC000
+Heap_Size      EQU     0x8000
 
                 AREA    HEAP, NOINIT, READWRITE, ALIGN=3
 __heap_base
@@ -434,29 +434,30 @@ I2C4_Error_IRQHandler
 ;*******************************************************************************
 ; User Stack and Heap initialization
 ;*******************************************************************************
-                 IF      :DEF:__MICROLIB
-                
-                 EXPORT  __initial_sp
-                 EXPORT  __heap_base
-                 EXPORT  __heap_limit
-                
-                 ELSE
-                
-                 IMPORT  __use_two_region_memory
-                 EXPORT  __user_initial_stackheap
-                 
+				IF      :DEF:__MICROLIB
+
+				EXPORT	Stack_Mem
+				EXPORT  __initial_sp
+				EXPORT  __heap_base
+				EXPORT  __heap_limit
+
+				ELSE
+
+				IMPORT  __use_two_region_memory
+				EXPORT  __user_initial_stackheap
+
 __user_initial_stackheap
 
-                 LDR     R0, =  Heap_Mem
-                 LDR     R1, =(Stack_Mem + Stack_Size)
-                 LDR     R2, = (Heap_Mem +  Heap_Size)
-                 LDR     R3, = Stack_Mem
-                 BX      LR
+				LDR     R0, =  Heap_Mem
+				LDR     R1, =(Stack_Mem + Stack_Size)
+				LDR     R2, = (Heap_Mem +  Heap_Size)
+				LDR     R3, = Stack_Mem
+				BX      LR
 
-                 ALIGN
+				ALIGN
 
-                 ENDIF
+				ENDIF
 
-                 END
+				END
 
 ;************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE*****

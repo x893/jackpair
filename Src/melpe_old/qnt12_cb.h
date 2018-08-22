@@ -21,26 +21,21 @@
 #ifndef _QNT12_CB_H_
 #define _QNT12_CB_H_
 
-extern const int16_t bp_index_map[];
+#include <stdint.h>
+#include "sc1200.h"
 
-extern const int16_t inv_bp_index_map[];
+extern int16_t bp_index_map[];
+extern int16_t inv_bp_index_map[];
+extern int16_t vvv_index_map[];
 
-extern const int16_t pitch_uvflag_map[];
+// extern int16_t pitch_uvflag_map[];
 
-extern const int16_t vvv_index_map[];
-
-extern const int16_t pitch_vq_cb_vvv[];
-
-extern const int16_t pitch_vq_cb_uvv[];
-
-extern const int16_t gain_vq_cb[];
-
-extern const int16_t inpCoef[][2 * LPC_ORD];
-
+extern int16_t pitch_vq_cb_vvv[];
+extern int16_t pitch_vq_cb_uvv[];
+extern int16_t gain_vq_cb[];
+extern int16_t inpCoef[][2 * LPC_ORD];
 extern const int16_t lsp_v_256x64x32x32[];
-
 extern const int16_t lsp_uv_9[];
-
-extern const int16_t res256x64x64x64[];
+extern int16_t res256x64x64x64[];
 
 #endif

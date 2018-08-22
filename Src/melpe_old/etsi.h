@@ -16,7 +16,7 @@
 
 #ifndef ARMDSP_DSPFNS_H
 #define ARMDSP_DSPFNS_H
-#define __ARMCLIB_VERSION 5060009
+//!!! #define __ARMCLIB_VERSION 5060009
 
 #include "constant.h"
 
