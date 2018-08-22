@@ -575,8 +575,10 @@ int16_t *v_zap(int16_t vec1[], int16_t n)
 	return (vec1 - n);
 }
 
+// Comment next line to disable heap size control
 #define USE_HEAP_SIZE
 #ifdef USE_HEAP_SIZE
+#warning "Check heap size"
 uint32_t HeapMaxAddr = 0;
 #endif
 

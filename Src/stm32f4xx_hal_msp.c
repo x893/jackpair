@@ -198,7 +198,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
 		/**ADC1 GPIO Configuration
 		PA0-WKUP     ------> ADC1_IN0
 		*/
-		HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0);
+		HAL_GPIO_DeInit(PORT(MIC_PIN), PIN(MIC_PIN));
 
 		/* Peripheral DMA DeInit*/
 		HAL_DMA_DeInit(hadc->DMA_Handle);
@@ -217,7 +217,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
 		/**ADC2 GPIO Configuration
 		PA1     ------> ADC2_IN1
 		*/
-		HAL_GPIO_DeInit(GPIOA, GPIO_PIN_1);
+		HAL_GPIO_DeInit(PORT(LINE_IN_PIN), PIN(LINE_IN_PIN));
 
 		/* Peripheral DMA DeInit*/
 		HAL_DMA_DeInit(hadc->DMA_Handle);
@@ -236,7 +236,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
 		/**ADC3 GPIO Configuration
 		PC0     ------> ADC3_IN10
 		*/
-		HAL_GPIO_DeInit(GPIOC, GPIO_PIN_0);
+		HAL_GPIO_DeInit(PORT(BAT_PIN), PIN(BAT_PIN));
 
 		/* USER CODE BEGIN ADC3_MspDeInit 1 */
 
@@ -324,7 +324,7 @@ void HAL_DAC_MspDeInit(DAC_HandleTypeDef* hdac)
 		PA4     ------> DAC_OUT1
 		PA5     ------> DAC_OUT2
 		*/
-		HAL_GPIO_DeInit(GPIOA, GPIO_PIN_4 | GPIO_PIN_5);
+		HAL_GPIO_DeInit(PORT(SPEAKER_PIN), PIN(SPEAKER_PIN) | PIN(LINE_OUT_PIN));
 
 		/* Peripheral DMA DeInit*/
 		HAL_DMA_DeInit(hdac->DMA_Handle1);
@@ -459,12 +459,12 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 		PA2     ------> USART2_TX
 		PA3     ------> USART2_RX
 		*/
-		GPIO_InitStruct.Pin = PIN(USART_TX_PIN) | PIN(USART_RX_PIN);
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
 		GPIO_InitStruct.Pull = GPIO_PULLUP;
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 		GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
-		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+		GPIO_InitStruct.Pin = PIN(USART_TX_PIN) | PIN(USART_RX_PIN);
+		HAL_GPIO_Init(PORT(USART_TX_PIN), &GPIO_InitStruct);
 
 		/* USER CODE BEGIN USART2_MspInit 1 */
 
@@ -488,7 +488,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
 		PA2     ------> USART2_TX
 		PA3     ------> USART2_RX
 		*/
-		HAL_GPIO_DeInit(GPIOA, USART_TX_Pin | USART_RX_Pin);
+		HAL_GPIO_DeInit(PORT(USART_TX_PIN), PIN(USART_TX_PIN) | PIN(USART_RX_PIN));
 
 	}
 	/* USER CODE BEGIN USART2_MspDeInit 1 */

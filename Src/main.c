@@ -62,7 +62,12 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim5;
 
+#ifdef USE_STATISTIC
+#warning "Statistic output enable"
 UART_HandleTypeDef huart2;
+#else
+#warning "Statistic output disable"
+#endif
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -128,7 +133,9 @@ static void MX_ADC2_Init(void);
 static void MX_ADC3_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM5_Init(void);
+#ifdef USE_STATISTIC
 static void MX_USART2_UART_Init(void);
+#endif
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -203,8 +210,9 @@ int main(void)
 	MX_ADC3_Init();
 	MX_TIM4_Init();
 	MX_TIM5_Init();
+#ifdef USE_STATISTIC
 	MX_USART2_UART_Init();
-
+#endif
 	/* USER CODE BEGIN 2 */
 	//----------------------------------------------------------------------
 	//init melpe 800 bps codec at 6KHz sampling rate
@@ -785,6 +793,7 @@ static void MX_TIM5_Init(void)
 
 }
 
+#ifdef USE_STATISTIC
 /* USART2 init function */
 static void MX_USART2_UART_Init(void)
 {
@@ -803,6 +812,7 @@ static void MX_USART2_UART_Init(void)
 	}
 
 }
+#endif
 
 /**
   * Enable DMA controller clock
@@ -925,6 +935,38 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+/**
+  * @brief  Error ADC callback.
+  * @note   In case of error due to overrun when using ADC with DMA transfer 
+  *         (HAL ADC handle paramater "ErrorCode" to state "HAL_ADC_ERROR_OVR"):
+  *         - Reinitialize the DMA using function "HAL_ADC_Stop_DMA()".
+  *         - If needed, restart a new ADC conversion using function
+  *           "HAL_ADC_Start_DMA()"
+  *           (this function is also clearing overrun flag)
+  * @param  hadc: pointer to a ADC_HandleTypeDef structure that contains
+  *         the configuration information for the specified ADC.
+  * @retval None
+  */
+void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc)
+{
+	Error_Handler();
+#if 0
+	HAL_ADC_Stop_DMA(hadc);
+	if (hadc == (&hadc1))
+	{
+		HAL_TIM_Base_Stop(&htim2);
+		HAL_ADC_Start_DMA(hadc, (uint32_t*)inbuf, 2 * SPEECH_FRAME);
+		HAL_TIM_Base_Start(&htim2);
+	}
+	else
+	{
+		HAL_TIM_Base_Stop(&htim3);
+		HAL_ADC_Start_DMA(hadc, (uint32_t*)inmdm, 2 * MODEM_FRAME); // baseband recording from Line using ADC2
+		HAL_TIM_Base_Start(&htim3);
+	}
+#endif
+}
+
 //ADC DMA interupt: fist half of record buffer ready
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
 {
@@ -988,6 +1030,12 @@ void Error_Handler(void)
 	/* User can add his own implementation to report the HAL error return state */
 	while (1)
 	{
+		HAL_GPIO_WritePin(TX_LED_PIN, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(RX_LED_PIN, GPIO_PIN_RESET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(TX_LED_PIN, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(RX_LED_PIN, GPIO_PIN_SET);
+		HAL_Delay(500);
 	}
 	/* USER CODE END Error_Handler */
 }
@@ -1004,10 +1052,8 @@ void Error_Handler(void)
 void assert_failed(uint8_t* file, uint32_t line)
 {
 	/* USER CODE BEGIN 6 */
-	/* User can add his own implementation to report the file name and line number,
-	  ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-	  /* USER CODE END 6 */
-
+	Error_Handler();
+	/* USER CODE END 6 */
 }
 
 #endif
